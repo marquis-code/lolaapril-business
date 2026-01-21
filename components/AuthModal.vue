@@ -25,7 +25,7 @@
                 <div class="max-w-md mx-auto w-full">
                   <!-- Logo -->
                   <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-primary-600 mb-2">
+                    <h2 class="lg:text-3xl text-xl font-bold text-primary-600 mb-2">
                       {{ getTitle }}
                     </h2>
                     <p class="text-gray-600">
