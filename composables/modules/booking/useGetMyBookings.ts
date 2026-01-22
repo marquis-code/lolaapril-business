@@ -10,8 +10,9 @@ export const useGetMyBookings = () => {
          startLoading('Fetching your bookings...')
         try {
             const res = (await booking_api.getMyBookings()) as any
+            console.log("My Bookings Response:", res)
             if (res.status === 200) {
-                const result = res.data
+                const result = res.data.data
                 bookings.value = result
             }
         } finally {

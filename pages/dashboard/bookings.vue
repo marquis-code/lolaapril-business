@@ -18,17 +18,17 @@
       <div v-else>
         <!-- Upcoming Appointments -->
         <div class="mb-12">
-          <h2 v-if="upcomingBookings.length" class="text-xl font-bold text-gray-900 mb-6">Upcoming</h2>
+          <h2 v-if="upcomingBookings.length" class="text-lg font-bold text-gray-900 mb-6">Upcoming</h2>
 
           <div v-if="upcomingBookings.length === 0" class="text-center py-16 bg-white rounded-2xl border-[0.5px] border-gray-100">
-            <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-14 h-14 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <p class="text-gray-900 text-lg font-semibold mb-2">No upcoming appointments</p>
-            <p class="text-gray-500 mb-6">Your upcoming appointments will appear here when you book</p>
+            <p class="text-gray-500 mb-6 text-sm">Your upcoming appointments will appear here when you book</p>
             <button
               @click="navigateTo('/#book')"
-              class="inline-flex items-center gap-2 bg-gray-900 text-white font-semibold px-6 py-3 rounded-full hover:bg-gray-800 transition-colors"
+              class="inline-flex items-center text-sm gap-2 bg-gray-900 text-white font-semibold px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
             >
               Search salons
             </button>
@@ -38,22 +38,22 @@
             <div
               v-for="booking in upcomingBookings"
               :key="booking._id"
-              class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer"
+              class="bg-white rounded-2xl border-[0.5px] border-gray-100 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer"
               @click="selectBooking(booking)"
             >
               <div class="p-6">
                 <div class="flex gap-4">
-                  <div v-if="booking.business?.images?.[0]" class="flex-shrink-0">
-                    <img
-                      :src="booking.business.images[0]"
+                  <div class="flex-shrink-0">
+                       <img
+                      src="@/assets/img/logo.png"
                       alt="Business"
-                      class="w-20 h-20 rounded-lg object-cover"
+                      class="w-16 h-16 p-2 bg-primary rounded-lg object-cover"
                     />
                   </div>
-                  <div v-else class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg"></div>
+                  <!-- <div v-else class="flex-shrink-0 w-16 h-16 p-2 bg-primary rounded-lg"></div> -->
                   
                   <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 mb-1">
+                    <h3 class="font-semibold text-sm text-gray-900 mb-1">
                       {{ booking.business?.name || 'Lola April Wellness Spa' }}
                     </h3>
                     <p class="text-sm text-gray-600 mb-2">
@@ -98,7 +98,7 @@
                   <!-- <div v-else class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg"></div> -->
                   
                   <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 mb-1">
+                    <h3 class="font-semibold text-sm text-gray-900 mb-1">
                       {{ booking.business?.name || 'Lola April Wellness Spa' }}
                     </h3>
                     <p class="text-sm text-gray-600 mb-2">
@@ -233,34 +233,54 @@ definePageMeta({
 })
 
 const { loading, bookings, getMyBookings, error } = useGetMyBookings()
+
+const normalizeDate = (date: Date) => {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
 const selectedBooking = ref<any>(null)
 
 const upcomingBookings = computed(() => {
+  const today = normalizeDate(new Date())
+
   return bookings.value.filter((booking: any) => {
-    const bookingDate = new Date(booking.preferredDate)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return bookingDate >= today && booking.status !== 'cancelled' && booking.status !== 'completed'
+    const bookingDate = normalizeDate(new Date(booking.preferredDate))
+    const status = booking.status?.toLowerCase()
+
+    return (
+      bookingDate >= today &&
+      status !== 'completed' &&
+      status !== 'cancelled'
+    )
   })
 })
 
+
 const pastBookings = computed(() => {
+  const today = normalizeDate(new Date())
+
   return bookings.value.filter((booking: any) => {
-    const bookingDate = new Date(booking.preferredDate)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return bookingDate < today || booking.status === 'completed' || booking.status === 'cancelled'
+    const bookingDate = normalizeDate(new Date(booking.preferredDate))
+    const status = booking.status?.toLowerCase()
+
+    return (
+      bookingDate < today ||
+      status === 'completed' ||
+      status === 'cancelled'
+    )
   })
 })
 
 const formatDateTime = (dateStr: string, timeStr: string) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'short' })
+
+  const dayName = date.toLocaleDateString('en-GB', { weekday: 'short' })
   const day = date.getDate()
-  const month = date.toLocaleDateString('en-US', { month: 'short' })
+  const month = date.toLocaleDateString('en-GB', { month: 'short' })
   const year = date.getFullYear()
-  
+
   return `${dayName}, ${day} ${month} ${year} at ${timeStr}`
 }
 
@@ -270,11 +290,13 @@ const formatPrice = (price: number) => {
 }
 
 const getStatusClass = (status: string) => {
-  const statusLower = status.toLowerCase()
-  if (statusLower === 'confirmed') return 'bg-green-100 text-green-800'
-  if (statusLower === 'pending') return 'bg-yellow-100 text-yellow-800'
-  if (statusLower === 'cancelled') return 'bg-red-100 text-red-800'
-  if (statusLower === 'completed') return 'bg-blue-100 text-blue-800'
+  const s = status?.toLowerCase()
+
+  if (s === 'confirmed') return 'bg-green-100 text-green-800'
+  if (s === 'pending') return 'bg-yellow-100 text-yellow-800'
+  if (s === 'cancelled') return 'bg-red-100 text-red-800'
+  if (s === 'completed') return 'bg-blue-100 text-blue-800'
+
   return 'bg-gray-100 text-gray-800'
 }
 

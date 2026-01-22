@@ -9,5 +9,9 @@ export const payment_api = {
     verifyPayment: (reference: string) => {
         const url = `/payments/verify/${reference}`
         return GATEWAY_ENDPOINT.get(url)
+    },
+    myTransactions: () => {
+        const url = `/payments/my/transactions`
+        return GATEWAY_ENDPOINT.get(url)
     }
 }

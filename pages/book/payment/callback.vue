@@ -171,17 +171,22 @@
         <div class="space-y-3 pt-6">
           <button
             @click="goToBookings"
-            class="w-full bg-[#005967] text-white font-semibold py-3.5 text-sm rounded-full transition-all shadow-sm"
+            class="w-full bg-[#005967] text-white font-semibold py-3.5 text-sm rounded-full transition-all shadow-sm hover:bg-[#004552]"
           >
             View My Bookings
           </button>
           
           <div class="grid grid-cols-2 gap-3">
             <button
-              @click="downloadReceipt"
-              class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-full text-sm transition-all border border-gray-200"
+              @click="downloadPDFReceipt"
+              :disabled="downloadingPDF"
+              class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-full text-sm transition-all border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Download Receipt
+              <svg v-if="!downloadingPDF" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span v-if="downloadingPDF">Generating...</span>
+              <span v-else>Download PDF</span>
             </button>
             
             <button
@@ -207,7 +212,7 @@
         <div class="space-y-3 max-w-sm mx-auto">
           <button
             @click="retryVerification"
-            class="w-full bg-[#005967] text-white rounded-full text-sm font-semibold py-3 transition-all"
+            class="w-full bg-[#005967] text-white rounded-full text-sm font-semibold py-3 transition-all hover:bg-[#004552]"
           >
             Retry Verification
           </button>
@@ -226,6 +231,7 @@
 
 <script setup lang="ts">
 import { useVerifyPayment } from '@/composables/modules/payment/useVerifyPayment'
+import jsPDF from 'jspdf'
 
 const route = useRoute()
 const router = useRouter()
@@ -236,6 +242,7 @@ const verifying = ref(true)
 const verificationSuccess = ref(false)
 const verificationError = ref<string | null>(null)
 const paymentData = ref<any>(null)
+const downloadingPDF = ref(false)
 
 // Computed properties for easier access to nested data
 const bookingData = computed(() => paymentData.value?.bookingId)
@@ -261,52 +268,253 @@ const goToBookings = () => {
   navigateTo('/dashboard/bookings')
 }
 
-const downloadReceipt = () => {
-  const receipt = `
-PAYMENT RECEIPT
-=====================================
-
-Booking Reference: ${bookingData.value?.bookingNumber}
-Transaction ID: ${paymentData.value?.transactionId}
-Payment Reference: ${paymentData.value?.paymentReference}
-
-Client Information:
------------------------------------
-Name: ${clientData.value?.firstName} ${clientData.value?.lastName}
-Email: ${clientData.value?.email}
-Phone: ${bookingData.value?.clientPhone}
-
-Booking Details:
------------------------------------
-Service: ${bookingData.value?.services?.[0]?.serviceName}
-Date: ${formatDate(bookingData.value?.preferredDate)}
-Time: ${bookingData.value?.preferredStartTime} - ${bookingData.value?.estimatedEndTime}
-Duration: ${bookingData.value?.totalDuration} minutes
-
-Payment Summary:
------------------------------------
-Subtotal: ₦${formatPrice(paymentData.value?.subtotal)}
-Tax: ₦${formatPrice(paymentData.value?.totalTax)}
-Discount: ₦${formatPrice(paymentData.value?.totalDiscount)}
-Total Paid: ₦${formatPrice(paymentData.value?.totalAmount)}
-
-Payment Method: ${paymentData.value?.paymentMethod}
-Payment Status: ${paymentData.value?.status}
-Payment Date: ${new Date(paymentData.value?.paidAt).toLocaleString()}
-
-=====================================
-Thank you for your booking!
-  `
-
-  const blob = new Blob([receipt], { type: 'text/plain' })
-  const url = window.URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `receipt-${bookingData.value?.bookingNumber}.txt`
-  document.body.appendChild(a)
-  a.click()
-  window.URL.revokeObjectURL(url)
-  document.body.removeChild(a)
+const downloadPDFReceipt = async () => {
+  try {
+    downloadingPDF.value = true
+    
+    const doc = new jsPDF('p', 'mm', 'a4')
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const margin = 20
+    const contentWidth = pageWidth - (margin * 2)
+    
+    // Brand color
+    const primaryColor = [0, 89, 103] // #005967
+    const lightPrimary = [230, 245, 247]
+    const darkGray = [51, 51, 51]
+    const mediumGray = [107, 114, 128]
+    const lightGray = [243, 244, 246]
+    
+    let yPos = margin
+    
+    // Header with brand color background
+    doc.setFillColor(...primaryColor)
+    doc.rect(0, 0, pageWidth, 60, 'F')
+    
+    // Logo placeholder - you can replace this with actual logo loading
+    doc.setFillColor(255, 255, 255)
+    doc.circle(30, 30, 12, 'F')
+    doc.setTextColor(0, 89, 103)
+    doc.setFontSize(20)
+    doc.setFont('helvetica', 'bold')
+    doc.text('LA', 30, 33, { align: 'center' })
+    
+    // Business Name
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(22)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Lola April Wellness Spa', 50, 28)
+    
+    // Tagline
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Outside Health Starts Inside', 50, 36)
+    
+    // Payment Receipt Title
+    yPos = 75
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(24)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Payment Receipt', pageWidth / 2, yPos, { align: 'center' })
+    
+    // Success Badge
+    yPos += 15
+    doc.setFillColor(220, 252, 231)
+    doc.setDrawColor(134, 239, 172)
+    doc.roundedRect(pageWidth / 2 - 25, yPos - 5, 50, 10, 2, 2, 'FD')
+    doc.setTextColor(22, 163, 74)
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'bold')
+    doc.text('PAID', pageWidth / 2, yPos + 2, { align: 'center' })
+    
+    // Booking Reference
+    yPos += 18
+    doc.setTextColor(...mediumGray)
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Booking Reference', pageWidth / 2, yPos, { align: 'center' })
+    
+    yPos += 6
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.text(bookingData.value?.bookingNumber || 'N/A', pageWidth / 2, yPos, { align: 'center' })
+    
+    // Divider
+    yPos += 10
+    doc.setDrawColor(...lightGray)
+    doc.setLineWidth(0.5)
+    doc.line(margin, yPos, pageWidth - margin, yPos)
+    
+    // Client Information Section
+    yPos += 12
+    doc.setFillColor(...lightPrimary)
+    doc.roundedRect(margin, yPos, contentWidth, 28, 2, 2, 'F')
+    
+    yPos += 8
+    doc.setTextColor(...primaryColor)
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('CLIENT INFORMATION', margin + 5, yPos)
+    
+    yPos += 8
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Name: ${clientData.value?.firstName} ${clientData.value?.lastName}`, margin + 5, yPos)
+    
+    yPos += 6
+    doc.text(`Email: ${clientData.value?.email}`, margin + 5, yPos)
+    
+    yPos += 6
+    doc.text(`Phone: ${bookingData.value?.clientPhone || 'N/A'}`, margin + 5, yPos)
+    
+    // Appointment Details Section
+    yPos += 12
+    doc.setFillColor(...lightPrimary)
+    doc.roundedRect(margin, yPos, contentWidth, 34, 2, 2, 'F')
+    
+    yPos += 8
+    doc.setTextColor(...primaryColor)
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('APPOINTMENT DETAILS', margin + 5, yPos)
+    
+    yPos += 8
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Service: ${bookingData.value?.services?.[0]?.serviceName || 'N/A'}`, margin + 5, yPos)
+    
+    yPos += 6
+    doc.text(`Duration: ${bookingData.value?.totalDuration || 0} minutes`, margin + 5, yPos)
+    
+    yPos += 6
+    doc.text(`Date: ${formatDate(bookingData.value?.preferredDate)}`, margin + 5, yPos)
+    
+    yPos += 6
+    doc.text(`Time: ${bookingData.value?.preferredStartTime} - ${bookingData.value?.estimatedEndTime}`, margin + 5, yPos)
+    
+    // Payment Summary Section
+    yPos += 12
+    doc.setFillColor(...lightGray)
+    doc.roundedRect(margin, yPos, contentWidth, 8, 2, 2, 'F')
+    
+    yPos += 6
+    doc.setTextColor(...primaryColor)
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('PAYMENT SUMMARY', margin + 5, yPos)
+    
+    // Payment Items
+    yPos += 10
+    const lineItems = [
+      { label: 'Subtotal', value: `₦${formatPrice(paymentData.value?.subtotal)}`, bold: false },
+    ]
+    
+    if (paymentData.value?.totalDiscount > 0) {
+      lineItems.push({ label: 'Discount', value: `-₦${formatPrice(paymentData.value?.totalDiscount)}`, bold: false })
+    }
+    
+    if (paymentData.value?.totalTax > 0) {
+      lineItems.push({ label: 'Tax', value: `₦${formatPrice(paymentData.value?.totalTax)}`, bold: false })
+    }
+    
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(10)
+    
+    lineItems.forEach(item => {
+      doc.setFont('helvetica', item.bold ? 'bold' : 'normal')
+      doc.text(item.label, margin + 5, yPos)
+      doc.text(item.value, pageWidth - margin - 5, yPos, { align: 'right' })
+      yPos += 6
+    })
+    
+    // Total Line
+    yPos += 2
+    doc.setDrawColor(...primaryColor)
+    doc.setLineWidth(0.8)
+    doc.line(margin, yPos, pageWidth - margin, yPos)
+    
+    yPos += 8
+    doc.setTextColor(...primaryColor)
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.text('TOTAL PAID', margin + 5, yPos)
+    doc.text(`₦${formatPrice(paymentData.value?.totalAmount)}`, pageWidth - margin - 5, yPos, { align: 'right' })
+    
+    // Payment Details
+    yPos += 12
+    doc.setFillColor(...lightPrimary)
+    doc.roundedRect(margin, yPos, contentWidth, 20, 2, 2, 'F')
+    
+    yPos += 8
+    doc.setTextColor(...primaryColor)
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('PAYMENT DETAILS', margin + 5, yPos)
+    
+    yPos += 8
+    doc.setTextColor(...darkGray)
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Payment Method: ${paymentData.value?.paymentMethod?.toUpperCase() || 'N/A'}`, margin + 5, yPos)
+    
+    yPos += 5
+    doc.setFontSize(8)
+    doc.text(`Transaction ID: ${paymentData.value?.transactionId || 'N/A'}`, margin + 5, yPos)
+    
+    yPos += 5
+    const paidDate = paymentData.value?.paidAt ? new Date(paymentData.value.paidAt).toLocaleString() : 'N/A'
+    doc.text(`Payment Date: ${paidDate}`, margin + 5, yPos)
+    
+    // Important Reminders
+    yPos += 15
+    doc.setFillColor(239, 246, 255)
+    doc.setDrawColor(191, 219, 254)
+    doc.roundedRect(margin, yPos, contentWidth, 26, 2, 2, 'FD')
+    
+    yPos += 7
+    doc.setTextColor(30, 64, 175)
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Important Reminders', margin + 5, yPos)
+    
+    yPos += 6
+    doc.setTextColor(51, 65, 85)
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.text('• Please arrive 10 minutes before your appointment', margin + 8, yPos)
+    
+    yPos += 5
+    doc.text('• Bring a valid form of identification', margin + 8, yPos)
+    
+    yPos += 5
+    doc.text('• Cancellations must be made 24 hours in advance', margin + 8, yPos)
+    
+    // Footer
+    const footerY = pageHeight - 25
+    doc.setDrawColor(...lightGray)
+    doc.setLineWidth(0.3)
+    doc.line(margin, footerY, pageWidth - margin, footerY)
+    
+    doc.setTextColor(...mediumGray)
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Thank you for choosing Lola April Wellness Spa', pageWidth / 2, footerY + 5, { align: 'center' })
+    doc.text('For inquiries, please contact us at info@lolaaprils pa.com', pageWidth / 2, footerY + 10, { align: 'center' })
+    doc.text(`Receipt generated on ${new Date().toLocaleDateString()}`, pageWidth / 2, footerY + 15, { align: 'center' })
+    
+    // Save the PDF
+    const fileName = `receipt-${bookingData.value?.bookingNumber || 'payment'}.pdf`
+    doc.save(fileName)
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+    alert('Failed to generate PDF receipt. Please try again.')
+  } finally {
+    downloadingPDF.value = false
+  }
 }
 
 const verifyPaymentFromUrl = async () => {
@@ -350,29 +558,26 @@ onMounted(() => {
 
 <style scoped>
 .border-primary {
-  border-color: var(--primary-color, #6366f1);
+  border-color: #005967;
 }
 
 .bg-primary {
-  background-color: var(--primary-color, #6366f1);
+  background-color: #005967;
 }
 
 .bg-primary\/90 {
-  background-color: var(--primary-color, #6366f1);
-  opacity: 0.9;
+  background-color: rgba(0, 89, 103, 0.9);
 }
 
 .bg-primary\/10 {
-  background-color: var(--primary-color, #6366f1);
-  opacity: 0.1;
+  background-color: rgba(0, 89, 103, 0.1);
 }
 
 .text-primary {
-  color: var(--primary-color, #6366f1);
+  color: #005967;
 }
 
 .hover\:bg-primary\/90:hover {
-  background-color: var(--primary-color, #6366f1);
-  opacity: 0.9;
+  background-color: rgba(0, 89, 103, 0.9);
 }
 </style>

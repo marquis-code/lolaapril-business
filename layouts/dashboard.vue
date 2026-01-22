@@ -125,11 +125,11 @@
     <main class="flex-1 lg:ml-64">
       <!-- Dashboard Header -->
       <div class="bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm hidden lg:block">
-        <div class="px-6 py-4">
+        <div class="px-6 py-1.5">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle }}</h1>
-              <p class="text-sm text-gray-500 mt-0.5">{{ pageDescription }}</p>
+              <h1 class="text-xl font-bold text-gray-900">{{ pageTitle }}</h1>
+              <p class="text-sm text-gray-500">{{ pageDescription }}</p>
             </div>
             <div class="flex items-center gap-3">
               <!-- User Profile -->
