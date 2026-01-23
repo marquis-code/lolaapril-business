@@ -34,7 +34,7 @@
           <div v-else class="w-9 sm:w-10 flex-shrink-0"></div>
 
           <div
-            class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm flex-1 justify-center px-2"
+            class="flex items-center space-x-1 sm:space-x-2 text-sm sm:text-sm flex-1 justify-center px-2"
           >
             <span
               :class="
@@ -1241,7 +1241,7 @@ import { useInitializePayment } from "@/composables/modules/payment/useInitializ
 import { useLogin } from "@/composables/modules/auth/useLogin";
 import { useRegister } from "@/composables/modules/auth/useRegister";
 import { useGoogleAuth } from "@/composables/modules/auth/useGoogleAuth";
-
+// bookingNotes
 // Props
 const props = defineProps<{
   isOpen: boolean;
@@ -1257,7 +1257,7 @@ const route = useRoute();
 const { business } = useGetBusiness();
 const { services, getServices, loading: isLoadingServices } = useGetServices();
 const { slots: availableSlots, getAvailableSlots } = useGetAvailableSlots();
-const { getAllSlots } = useGetAllSlots();
+// const { getAllSlots } = useGetAllSlots();
 const { createBooking } = useCreateBooking();
 const { initializePayment } = useInitializePayment();
 const { login, error: loginError } = useLogin();
@@ -1865,28 +1865,58 @@ const confirmBooking = async () => {
 
   try {
     const payload = {
-      businessId: business.value._id,
-      clientId: currentUser.value?.id,
-      clientName: `${currentUser.value?.firstName || ""} ${
-        currentUser.value?.lastName || ""
-      }`.trim(),
-      clientEmail: currentUser.value?.email || "",
-      clientPhone: currentUser.value?.phone || "",
-      preferredDate: selectedDate.value,
-      preferredStartTime: selectedTime.value,
-      services: cart.value.map((item) => ({
-        serviceId: item.service._id,
-        bufferTime: 0,
-      })),
-      bookingSource: {
-        sourceType: route.query.source || "direct_link",
-        sourceIdentifier: `BOOKING-WEB-${Date.now()}`,
-        channel: "web",
-        ipAddress: "N/A",
-        userAgent: navigator.userAgent,
-      },
-      notes: bookingNotes.value,
-    };
+  businessId: business.value._id,
+  clientId: currentUser.value?.id,
+  bookingNotes: bookingNotes.value,
+  clientName: `${currentUser.value?.firstName || ""} ${
+    currentUser.value?.lastName || ""
+  }`.trim(),
+  clientEmail: currentUser.value?.email || "",
+  preferredDate: selectedDate.value,
+  preferredStartTime: selectedTime.value,
+  services: cart.value.map((item: any) => ({
+    serviceId: item.service._id,
+    bufferTime: 0,
+  })),
+  bookingSource: {
+    sourceType: route.query.source || "direct_link",
+    sourceIdentifier: `BOOKING-WEB-${Date.now()}`,
+    channel: "web",
+    ipAddress: "N/A",
+    userAgent: navigator.userAgent,
+  },
+  notes: bookingNotes.value,
+
+  // 👇 only included if phone is a non-empty string
+  ...(currentUser.value?.phone?.trim()
+    ? { clientPhone: currentUser.value.phone }
+    : {}),
+};
+
+    // const payload = {
+    //   businessId: business.value._id,
+    //   clientId: currentUser.value?.id,
+    //   bookingNotes: bookingNotes.value,
+    //   clientName: `${currentUser.value?.firstName || ""} ${
+    //     currentUser.value?.lastName || ""
+    //   }`.trim(),
+    //   clientEmail: currentUser.value?.email || "",
+    //   clientPhone: currentUser.value?.phone || "",
+    //   preferredDate: selectedDate.value,
+    //   preferredStartTime: selectedTime.value,
+    //   services: cart.value.map((item) => ({
+    //     serviceId: item.service._id,
+    //     bufferTime: 0,
+    //   })),
+    //   bookingSource: {
+    //     sourceType: route.query.source || "direct_link",
+    //     sourceIdentifier: `BOOKING-WEB-${Date.now()}`,
+    //     channel: "web",
+    //     ipAddress: "N/A",
+    //     userAgent: navigator.userAgent,
+    //   },
+    //   notes: bookingNotes.value,
+    // };
 
     const data = await createBooking(payload);
 
