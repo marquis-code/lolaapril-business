@@ -115,7 +115,9 @@
                     <button
                       type="button"
                       @click="handleGoogleAuth"
-                      class="w-full flex items-center justify-center gap-3 bg-white border-[0.5px] border-gray-100 hover:border-gray-100 text-gray-700 font-semibold py-3 rounded-full transition-all"
+                      :disabled="googleAuthLoading"
+                      
+                      class="w-full disabled:cursor-not-allowed disabled:opacity-25 flex items-center justify-center gap-3 bg-white border-[0.5px] border-gray-100 hover:border-gray-100 text-gray-700 font-semibold py-3 rounded-full transition-all"
                     >
                       <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -123,7 +125,7 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                       </svg>
-                      Continue with Google
+                       {{ googleAuthLoading ? 'processing..' : 'Continue with Google'   }}
                     </button>
 
                     <p class="text-center text-sm text-gray-600">
@@ -198,7 +200,8 @@
                     <button
                       type="button"
                       @click="handleGoogleAuth"
-                      class="w-full flex items-center justify-center gap-3 bg-white border-[0.5px] border-gray-100 hover:border-gray-100 text-gray-700 font-medium py-3 rounded-full transition-all"
+                      :disabled="googleAuthLoading"
+                      class="w-full flex disabled:cursor-not-allowed disabled:opacity-25 items-center justify-center gap-3 bg-white border-[0.5px] border-gray-100 hover:border-gray-100 text-gray-700 font-medium py-3 rounded-full transition-all"
                     >
                       <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -206,7 +209,7 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                       </svg>
-                      Continue with Google
+                       {{ googleAuthLoading ? 'processing..' : 'Continue with Google' }}
                     </button>
 
                     <p class="text-center text-sm text-gray-600">
@@ -427,7 +430,7 @@ import { useLogin } from "@/composables/modules/auth/useLogin"
 import { useForgotPassword } from "@/composables/modules/auth/useForgotPassword"
 import { useResetPassword } from "@/composables/modules/auth/useResetPassword"
 import { useVerifyResetPasswordOtp } from "@/composables/modules/auth/useVerifyResetPasswordOTP"
-import { useGoogleSignin } from "@/composables/modules/auth/useGoogleSignin"
+import { useGoogleAuth } from "@/composables/modules/auth/useGoogleAuth"
 
 const props = defineProps<{
   isOpen: boolean
@@ -444,7 +447,7 @@ const { loading: registerLoading, register } = useRegister()
 const { loading: forgotLoading, forgotPassword } = useForgotPassword()
 const { loading: resetLoading, resetPassword } = useResetPassword()
 const { loading: verifyLoading, verifyResetPasswordOtp } = useVerifyResetPasswordOtp()
-const { signInWithGoogle } = useGoogleSignin()
+const { loginWithGoogle, loading: googleAuthLoading } = useGoogleAuth()
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'verify-otp' | 'reset-password'
 
@@ -659,20 +662,9 @@ const handleResetPassword = async () => {
 }
 
 const handleGoogleAuth = async () => {
-  await signInWithGoogle()
-  // try {
-  //   // TODO: Implement Google OAuth
-  //   // This would typically redirect to your backend OAuth endpoint
-  //   // Example: window.location.href = '/api/auth/google'
-  //   console.log('Google authentication initiated')
-    
-  //   // Placeholder - replace with your actual Google OAuth implementation
-  //   const redirectUrl = `${window.location.origin}/api/auth/google`
-  //   window.location.href = redirectUrl
-  // } catch (error) {
-  //   console.error('Google authentication error:', error)
-  // }
+  await loginWithGoogle()
 }
+
 
 // Methods
 const switchMode = (newMode: AuthMode) => {

@@ -1,3 +1,4 @@
+
 <template>
   <Teleport to="body">
     <div
@@ -120,177 +121,218 @@
               ref="leftContentRef"
             >
               <!-- Step 1: Services -->
-             <!-- Step 1: Services -->
-<div v-show="currentStep === 1">
+              <!-- Step 1: Services -->
+              <div v-show="currentStep === 1">
+                <!-- Header -->
+                <h1
+                  class="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2"
+                >
+                  Services
+                </h1>
 
-  <!-- Header -->
-  <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-    Services
-  </h1>
-
-  <p class="text-sm sm:text-base text-gray-600 mb-6">
-    Choose the services you'd like to book
-  </p>
-
-  <!-- ===================== -->
-  <!-- 1️⃣ LOADING STATE -->
-  <!-- ===================== -->
-  <template v-if="isLoadingServices">
-    <p class="text-sm text-gray-500 mb-6">
-      Preparing a relaxing experience for you…
-    </p>
-
-    <!-- Category skeleton -->
-    <div class="flex gap-2 mb-6 overflow-x-auto">
-      <div
-        v-for="i in 5"
-        :key="i"
-        class="h-9 w-24 rounded-full bg-gray-100 animate-pulse"
-      />
-    </div>
-
-    <!-- Service card skeleton -->
-    <div class="space-y-4">
-      <div
-        v-for="i in 6"
-        :key="i"
-        class="bg-white border border-gray-100 rounded-xl p-4 animate-pulse"
-      >
-        <div class="flex justify-between gap-4">
-          <div class="flex-1 space-y-2">
-            <div class="h-4 w-2/3 bg-gray-100 rounded" />
-            <div class="h-3 w-full bg-gray-100 rounded" />
-            <div class="h-3 w-1/2 bg-gray-100 rounded" />
-          </div>
-          <div class="w-8 h-8 rounded-full bg-gray-100" />
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <!-- ===================== -->
-  <!-- 2️⃣ EMPTY STATE -->
-  <!-- ===================== -->
-  <template v-else-if="!hasServices">
-    <div class="flex flex-col items-center text-center py-16 px-4">
-      <div
-        class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4"
-      >
-        <svg
-          class="w-8 h-8 text-primary"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
-
-      <h3 class="text-lg font-semibold text-gray-900 mb-1">
-        No services available right now
-      </h3>
-
-      <p class="text-sm text-gray-600 max-w-sm">
-        We’re currently curating the perfect wellness experiences for you.
-        Please check back shortly 🌿
-      </p>
-
-      <button
-        @click="refetchServices"
-        class="mt-6 px-6 py-3 rounded-full text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition"
-      >
-        Refresh
-      </button>
-    </div>
-  </template>
-
-  <!-- ===================== -->
-  <!-- 3️⃣ CONTENT STATE -->
-  <!-- ===================== -->
-  <template v-else>
-
-    <!-- Sticky Category Tabs -->
-    <div
-      class="sticky top-0 bg-white z-10 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 pb-4"
-    >
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        <button
-          v-for="category in serviceCategories"
-          :key="category"
-          @click="scrollToCategory(category)"
-          :class="[
-            'flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-sm transition',
-            activeCategory === category
-              ? 'bg-gray-900 text-white'
-              : 'bg-gray-50 text-gray-700 hover:bg-gray-100',
-          ]"
-        >
-          {{ category?.categoryName ?? 'All Services' }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Services by Category -->
-    <div ref="servicesContainerRef" class="space-y-8">
-      <div
-        v-for="category in serviceCategories"
-        :key="category"
-        :ref="(el) => setCategoryRef(category, el)"
-        class="scroll-mt-32"
-      >
-        <h2 class="text-lg font-bold text-gray-900 mb-3">
-          {{ category?.categoryName ?? 'Featured' }}
-        </h2>
-
-        <div class="space-y-3">
-          <div
-            v-for="service in getServicesByCategory(category)"
-            :key="service._id"
-            class="bg-white rounded-xl border-[0.5px] transition cursor-pointer p-3 sm:p-4 active:scale-98"
-            :class="
-              isServiceInCart(service._id)
-                ? 'border-primary bg-primary/5'
-                : 'border-gray-100'
-            "
-            @click="handleServiceClick(service)"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-sm sm:text-base mb-1">
-                  {{ service.basicDetails.serviceName }}
-                </h3>
-
-                <p class="text-gray-600 text-xs sm:text-sm mb-2 line-clamp-2">
-                  {{ service.basicDetails.description }}
+                <p class="text-sm sm:text-base text-gray-600 mb-6">
+                  Choose the services you'd like to book
                 </p>
 
-                <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
-                  <span>
-                    {{ formatDuration(service.pricingAndDuration.duration.servicingTime) }}
-                  </span>
-                  <span class="font-bold text-gray-900">
-                    {{ formatPrice(service.pricingAndDuration.price) }}
-                  </span>
-                </div>
-              </div>
+                <!-- ===================== -->
+                <!-- 1️⃣ LOADING STATE -->
+                <!-- ===================== -->
+                <template v-if="isLoadingServices">
+                  <p class="text-sm text-gray-500 mb-6">
+                    Preparing a relaxing experience for you…
+                  </p>
 
-                                  <button
-                            @click.stop="toggleServiceInCart(service)"
-                            class="ml-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition flex-shrink-0"
-                            :class="isServiceInCart(service._id) ? 'bg-primary text-white' : 'border-[0.5px] border-gray-100'"
-                          >
-                            <svg v-if="isServiceInCart(service._id)" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>
-                          </button>
+                  <!-- Category skeleton -->
+                  <div class="flex gap-2 mb-6 overflow-x-auto">
+                    <div
+                      v-for="i in 5"
+                      :key="i"
+                      class="h-9 w-24 rounded-full bg-gray-100 animate-pulse"
+                    />
+                  </div>
 
-              <!-- <button
+                  <!-- Service card skeleton -->
+                  <div class="space-y-4">
+                    <div
+                      v-for="i in 6"
+                      :key="i"
+                      class="bg-white border border-gray-100 rounded-xl p-4 animate-pulse"
+                    >
+                      <div class="flex justify-between gap-4">
+                        <div class="flex-1 space-y-2">
+                          <div class="h-4 w-2/3 bg-gray-100 rounded" />
+                          <div class="h-3 w-full bg-gray-100 rounded" />
+                          <div class="h-3 w-1/2 bg-gray-100 rounded" />
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-100" />
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- ===================== -->
+                <!-- 2️⃣ EMPTY STATE -->
+                <!-- ===================== -->
+                <template v-else-if="!hasServices">
+                  <div
+                    class="flex flex-col items-center text-center py-16 px-4"
+                  >
+                    <div
+                      class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4"
+                    >
+                      <svg
+                        class="w-8 h-8 text-primary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                      No services available right now
+                    </h3>
+
+                    <p class="text-sm text-gray-600 max-w-sm">
+                      We’re currently curating the perfect wellness experiences
+                      for you. Please check back shortly 🌿
+                    </p>
+
+                    <button
+                      @click="refetchServices"
+                      class="mt-6 px-6 py-3 rounded-full text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition"
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                </template>
+
+                <!-- ===================== -->
+                <!-- 3️⃣ CONTENT STATE -->
+                <!-- ===================== -->
+                <template v-else>
+                  <!-- Sticky Category Tabs -->
+                  <div
+                    class="sticky top-0 bg-white z-10 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 pb-4"
+                  >
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      <button
+                        v-for="category in serviceCategories"
+                        :key="category"
+                        @click="scrollToCategory(category)"
+                        :class="[
+                          'flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-sm transition',
+                          activeCategory === category
+                            ? 'bg-gray-900 text-white'
+                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100',
+                        ]"
+                      >
+                        {{ category?.categoryName ?? "All Services" }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Services by Category -->
+                  <div ref="servicesContainerRef" class="space-y-8">
+                    <div
+                      v-for="category in serviceCategories"
+                      :key="category"
+                      :ref="(el) => setCategoryRef(category, el)"
+                      class="scroll-mt-32"
+                    >
+                      <h2 class="text-lg font-bold text-gray-900 mb-3">
+                        {{ category?.categoryName ?? "Featured" }}
+                      </h2>
+
+                      <div class="space-y-3">
+                        <div
+                          v-for="service in getServicesByCategory(category)"
+                          :key="service._id"
+                          class="bg-white rounded-xl border-[0.5px] transition cursor-pointer p-3 sm:p-4 active:scale-98"
+                          :class="
+                            isServiceInCart(service._id)
+                              ? 'border-primary bg-primary/5'
+                              : 'border-gray-100'
+                          "
+                          @click="handleServiceClick(service)"
+                        >
+                          <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                              <h3
+                                class="font-semibold text-sm sm:text-base mb-1"
+                              >
+                                {{ service.basicDetails.serviceName }}
+                              </h3>
+
+                              <p
+                                class="text-gray-600 text-xs sm:text-sm mb-2 line-clamp-2"
+                              >
+                                {{ service.basicDetails.description }}
+                              </p>
+
+                              <div
+                                class="flex items-center gap-3 text-xs sm:text-sm text-gray-500"
+                              >
+                                <span>
+                                  {{
+                                    formatDuration(
+                                      service.pricingAndDuration.duration
+                                        .servicingTime
+                                    )
+                                  }}
+                                </span>
+                                <span class="font-bold text-gray-900">
+                                  {{
+                                    formatPrice(
+                                      service.pricingAndDuration.price
+                                    )
+                                  }}
+                                </span>
+                              </div>
+                            </div>
+
+                            <button
+                              @click.stop="toggleServiceInCart(service)"
+                              class="ml-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition flex-shrink-0"
+                              :class="
+                                isServiceInCart(service._id)
+                                  ? 'bg-primary text-white'
+                                  : 'border-[0.5px] border-gray-100'
+                              "
+                            >
+                              <svg
+                                v-if="isServiceInCart(service._id)"
+                                class="w-4 h-4"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+                              <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="#000000"
+                                viewBox="0 0 256 256"
+                              >
+                                <path
+                                  d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"
+                                ></path>
+                              </svg>
+                            </button>
+
+                            <!-- <button
                 @click.stop="toggleServiceInCart(service)"
                 class="ml-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition flex-shrink-0"
                 :class="
@@ -300,15 +342,13 @@
                 "
               >
               </button> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </template>
-</div>
-
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
 
               <!-- Step 2: Date/Time -->
               <div v-show="currentStep === 2">
@@ -687,7 +727,7 @@
                         {{
                           formatDuration(
                             item.service.pricingAndDuration.duration
-                              .servicingTime,
+                              .servicingTime
                           )
                         }}
                       </div>
@@ -695,7 +735,7 @@
                         {{
                           formatPrice(
                             item.selectedVariant?.price ||
-                              item.service.pricingAndDuration.price,
+                              item.service.pricingAndDuration.price
                           )
                         }}
                       </div>
@@ -892,7 +932,7 @@
                       selectedVariant
                         ? formatPrice(selectedVariant.price)
                         : formatPrice(
-                            selectedServiceForVariant.pricingAndDuration.price,
+                            selectedServiceForVariant.pricingAndDuration.price
                           )
                     }}
                   </span>
@@ -902,7 +942,7 @@
                         ? formatDuration(selectedVariant.duration.servicingTime)
                         : formatDuration(
                             selectedServiceForVariant.pricingAndDuration
-                              .duration.servicingTime,
+                              .duration.servicingTime
                           )
                     }}
                   </span>
@@ -972,7 +1012,7 @@
                 <div class="flex items-center justify-between gap-3 mt-1.5">
                   <span class="text-xs text-gray-500">{{
                     formatDuration(
-                      service.pricingAndDuration.duration.servicingTime,
+                      service.pricingAndDuration.duration.servicingTime
                     )
                   }}</span>
                   <span class="font-bold text-sm">{{
@@ -1131,6 +1171,48 @@
                   </button>
                 </div>
               </form>
+
+              <!-- Divider -->
+              <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-2 bg-white text-gray-500"
+                    >Or continue with</span
+                  >
+                </div>
+              </div>
+
+              <!-- Google Sign In -->
+              <button
+                type="button"
+                @click="handleGoogleAuth"
+                :disabled="googleAuthLoading"
+                class="w-full disabled:cursor-not-allowed disabled:opacity-25 flex items-center justify-center gap-3 bg-white border-[0.5px] border-gray-100 hover:border-gray-100 text-gray-700 font-semibold py-3 rounded-full transition-all"
+              >
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
+                </svg>
+                {{
+                  googleAuthLoading ? "processing.." : "Continue with Google"
+                }}
+              </button>
             </div>
           </div>
         </div>
@@ -1158,6 +1240,7 @@ import { useCreateBooking } from "@/composables/modules/booking/useCreateBooking
 import { useInitializePayment } from "@/composables/modules/payment/useInitializePayment";
 import { useLogin } from "@/composables/modules/auth/useLogin";
 import { useRegister } from "@/composables/modules/auth/useRegister";
+import { useGoogleAuth } from "@/composables/modules/auth/useGoogleAuth";
 
 // Props
 const props = defineProps<{
@@ -1179,6 +1262,7 @@ const { createBooking } = useCreateBooking();
 const { initializePayment } = useInitializePayment();
 const { login, error: loginError } = useLogin();
 const { register, error: signupError } = useRegister();
+const { loginWithGoogle, loading: googleAuthLoading } = useGoogleAuth();
 
 // State
 const currentStep = ref(1);
@@ -1242,8 +1326,7 @@ const serviceCategories = computed(() => {
   return Array.from(categories);
 });
 
-
-const hasServices = computed(() => serviceCategories.value.length > 0)
+const hasServices = computed(() => serviceCategories.value.length > 0);
 
 const getServicesByCategory = (category: string) => {
   if (category === "Featured") {
@@ -1253,6 +1336,18 @@ const getServicesByCategory = (category: string) => {
     services.value?.filter((s: any) => s.basicDetails.category === category) ||
     []
   );
+};
+
+const handleGoogleAuth = async () => {
+  await loginWithGoogle().then((response) => {
+    if (response?.data.success) {
+      checkUserAuthentication();
+      showAuthModal.value = false;
+      currentStep.value = 3;
+      loginForm.email = "";
+      loginForm.password = "";
+    }
+  })
 };
 
 const timeSlots = computed(() => {
@@ -1274,7 +1369,7 @@ const totalPrice = computed(() => {
 const availableExtraServices = computed(() => {
   return (
     services.value?.filter(
-      (s: any) => !cart.value.some((item) => item.service._id === s._id),
+      (s: any) => !cart.value.some((item) => item.service._id === s._id)
     ) || []
   );
 });
@@ -1297,7 +1392,7 @@ const calendarDates = computed(() => {
   const prevMonthLastDay = new Date(
     calendarYear.value,
     calendarMonth.value,
-    0,
+    0
   ).getDate();
   for (let i = dayOfWeek - 1; i >= 0; i--) {
     dates.push({
@@ -1469,7 +1564,7 @@ const handleServiceClick = (service: any) => {
 
 const toggleServiceInCart = (service: any) => {
   const index = cart.value.findIndex(
-    (item) => item.service._id === service._id,
+    (item) => item.service._id === service._id
   );
   if (index > -1) {
     cart.value.splice(index, 1);
@@ -1762,7 +1857,7 @@ watch(
       await fetchTimeSlots();
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const confirmBooking = async () => {
@@ -1772,8 +1867,9 @@ const confirmBooking = async () => {
     const payload = {
       businessId: business.value._id,
       clientId: currentUser.value?.id,
-      clientName:
-        `${currentUser.value?.firstName || ""} ${currentUser.value?.lastName || ""}`.trim(),
+      clientName: `${currentUser.value?.firstName || ""} ${
+        currentUser.value?.lastName || ""
+      }`.trim(),
       clientEmail: currentUser.value?.email || "",
       clientPhone: currentUser.value?.phone || "",
       preferredDate: selectedDate.value,
@@ -1861,7 +1957,7 @@ watch(
       }
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // Setup scroll observer when step 1 is active
@@ -1872,7 +1968,7 @@ watch(
       await nextTick();
       setupScrollObserver();
     }
-  },
+  }
 );
 
 // watch(() => currentStep.value, async (newStep) => {

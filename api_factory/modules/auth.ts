@@ -19,7 +19,8 @@ export const auth_api = {
 
     // 🆕 ADD THIS - For Google ID Token authentication
     googleAuth: (payload: { idToken: string; subdomain?: string }) => {
-        const url = "/auth/google/token"
+        // const url = "/auth/google/token"
+        const url = '/auth/firebase'
         return GATEWAY_ENDPOINT.post(url, payload)
     },
 
