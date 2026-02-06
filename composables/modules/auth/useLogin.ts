@@ -1,37 +1,35 @@
-import { auth_api } from "@/api_factory/modules/auth"
-import { useUser } from "@/composables/modules/auth/user"
-import { useCustomToast } from "@/composables/core/useCustomToast"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import type { BusinessLoginDto, AuthResponse } from '~/types/auth'
+import { useUser } from '@/composables/modules/auth/user'
+import { auth_api } from '~/api_factory/modules'
 
 export const useLogin = () => {
+    const router = useRouter()
+    const data = ref<AuthResponse | null>(null)
     const loading = ref(false)
     const error = ref<string | null>(null)
-    const { setToken, createUser } = useUser()
-    const { showToast } = useCustomToast()
-    const { startLoading, stopLoading } = useLoader()
+    const { createUser } = useUser()
 
-    const login = async (payload: any) => {
-        // loading.value = true
+    const login = async (credentials: BusinessLoginDto) => {
+        loading.value = true
         error.value = null
-        startLoading('Logging you in...')
         try {
-            const res = (await auth_api.login(payload)) as any
-            console.log("Login Response:", res)
-            if (res.data?.accessToken) {
-                createUser(res.data)
-                showToast({
-                    title: "Success",
-                    message: "Login successful",
-                    toastType: "success",
-                    duration: 3000,
-                })
-                return true
-            }
+            const response = await auth_api.login(credentials)
+          createUser(response.data)
+        router.push('/dashboard')
+            return response.data
+        } catch (e: any) {
+            error.value = e.message
+            throw e
         } finally {
-            stopLoading()
-            // loading.value = false
+            loading.value = false
         }
     }
 
-    return { loading, error, login }
+    return {
+        data,
+        loading,
+        error,
+        login
+    }
 }

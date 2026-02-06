@@ -1,47 +1,25 @@
-// useGetAllSlots.ts
-import { availability_api } from "@/api_factory/modules/availability"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import { availability_api } from '@/api_factory/modules'
 
 export const useGetAllSlots = () => {
-    const loading = ref(false)
-    const error = ref<string | null>(null)
-    const slots = ref<any[]>([])
-    const dateRange = ref<{ start: string; end: string } | null>(null)
-    const summary = ref<any>(null)
-    const { startLoading, stopLoading } = useLoader()
+  const data = ref<any>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-    const getAllSlots = async (params: { 
-        subdomain?: string
-        businessId?: string
-        startDate: string
-        endDate: string 
-    }) => {
-        loading.value = true
-        error.value = null
-        slots.value = []
-        dateRange.value = null
-        summary.value = null
-        startLoading('Fetching available slots...')
-        try {
-            const res = (await availability_api.getAllSlots(params)) as any
-            console.log("All Slots Response:", res)
-            if (res.data?.success) {
-                const result = res.data.data
-                if (result.slots && Array.isArray(result.slots)) {
-                    slots.value = result.slots
-                }
-                if (result.dateRange) {
-                    dateRange.value = result.dateRange
-                }
-                if (result.summary) {
-                    summary.value = result.summary
-                }
-            }
-        } finally {
-            stopLoading()
-            // loading.value = false
-        }
+  const execute = async (params: { startDate: string; endDate: string; subdomain?: string; businessId?: string }) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await availability_api.getAllSlots(params)
+      data.value = response.data?.data || response.data
+      return data.value
+    } catch (e: any) {
+      error.value = e.message
+      throw e
+    } finally {
+      loading.value = false
     }
+  }
 
-    return { loading, error, slots, dateRange, summary, getAllSlots }
+  return { data, loading, error, execute }
 }

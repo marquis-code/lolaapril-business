@@ -1,26 +1,30 @@
-import { ref } from "vue"
-import { auth_api } from "@/api_factory/modules/auth"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import { auth_api } from '~/api_factory/modules'
 
 export const useResetPassword = () => {
-    const loading = ref(false)
-    const { startLoading, stopLoading } = useLoader()
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  const success = ref(false)
 
-    const resetPassword = async (payload: any) => {
-        loading.value = true
-        startLoading("Resetting password...")
-
-        try {
-            const res = await auth_api.resetPassword(payload)
-            return res
-        } finally {
-            loading.value = false
-            stopLoading()
-        }
+  const resetPassword = async (payload: {
+    email: string
+    otp: string
+    newPassword: string
+  }) => {
+    loading.value = true
+    error.value = null
+    success.value = false
+    try {
+      await auth_api.resetPassword(payload)
+      await navigateTo('/auth/login?reset=success')
+      success.value = true
+    } catch (e: any) {
+      error.value = e.message
+      throw e
+    } finally {
+      loading.value = false
     }
+  }
 
-    return {
-        loading,
-        resetPassword,
-    }
+  return { loading, error, success, resetPassword }
 }

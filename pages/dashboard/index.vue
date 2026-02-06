@@ -1,309 +1,373 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8">Appointments</h1>
-
-      <div v-if="loading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  <div class="p-8 min-h-screen">
+    <div class="flex flex-col gap-2 mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Business Dashboard</h1>
+      <p class="text-gray-600">Monitor performance, bookings, and revenue across your business.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div v-for="card in metricCards" :key="card.label" class="bg-white rounded-2xl p-5 border-[0.5px] border-gray-100 -sm">
+        <div class="text-xs font-semibold text-gray-400 uppercase">{{ card.label }}</div>
+        <div class="text-2xl font-bold text-gray-900 mt-2">{{ card.value }}</div>
+        <div v-if="card.sub" class="text-xs text-gray-500 mt-1">{{ card.sub }}</div>
       </div>
+    </div>
 
-      <div v-else-if="error" class="text-center py-12 bg-white rounded-2xl border border-gray-200">
-        <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p class="text-red-500 text-lg">Failed to load appointments</p>
-        <p class="text-gray-500 mt-2">{{ error.message }}</p>
-      </div>
-
-      <div v-else>
-        <!-- Upcoming Appointments -->
-        <div class="mb-12">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">Upcoming</h2>
-
-          <div v-if="upcomingBookings.length === 0" class="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p class="text-gray-900 text-lg font-semibold mb-2">No upcoming appointments</p>
-            <p class="text-gray-500 mb-6">Your upcoming appointments will appear here when you book</p>
-            <button
-              @click="navigateTo('/#book')"
-              class="inline-flex items-center gap-2 bg-gray-900 text-white font-semibold px-6 py-3 rounded-full hover:bg-gray-800 transition-colors"
-            >
-              Search salons
-            </button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+      <div class="lg:col-span-2 bg-white rounded-2xl p-6 border-[0.5px] border-gray-100 -sm">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold">Revenue trend</h2>
+            <p class="text-xs text-gray-500">Daily revenue for the last {{ rangeLabel }}</p>
           </div>
-
-          <div v-else class="grid gap-4">
-            <div
-              v-for="booking in upcomingBookings"
-              :key="booking._id"
-              class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer"
-              @click="selectBooking(booking)"
+          <div class="flex items-center gap-2 text-xs">
+            <button
+              v-for="option in rangeOptions"
+              :key="option.value"
+              @click="setRange(option.value)"
+              class="px-3 py-1 rounded-full border"
+              :class="selectedRange === option.value ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-200 text-gray-600'"
             >
-              <div class="p-6">
-                <div class="flex gap-4">
-                  <div v-if="booking.business?.images?.[0]" class="flex-shrink-0">
-                    <img
-                      :src="booking.business.images[0]"
-                      alt="Business"
-                      class="w-20 h-20 rounded-lg object-cover"
-                    />
-                  </div>
-                  <div v-else class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg"></div>
-                  
-                  <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 mb-1">
-                      {{ booking.business?.name || 'Lola April Wellness Spa' }}
-                    </h3>
-                    <p class="text-sm text-gray-600 mb-2">
-                      {{ formatDateTime(booking.preferredDate, booking.preferredStartTime) }}
-                    </p>
-                    <p class="text-sm text-gray-600 mb-2">
-                      ₦{{ formatPrice(booking.estimatedTotal) }} • {{ booking.services?.length || 1 }} item{{ booking.services?.length > 1 ? 's' : '' }}
-                    </p>
-                    <button
-                      class="text-sm text-primary font-medium hover:text-primary-700"
-                      @click.stop="selectBooking(booking)"
-                    >
-                      Book again
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              {{ option.label }}
+            </button>
           </div>
         </div>
 
-        <!-- Past Appointments -->
-        <div v-if="pastBookings.length > 0">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">Past {{ pastBookings.length }}</h2>
+        <div class="mt-6">
+          <ClientOnly>
+            <apexchart
+              type="area"
+              height="200"
+              :options="revenueChartOptions"
+              :series="revenueChartSeries"
+            />
+          </ClientOnly>
+        </div>
+      </div>
 
-          <div class="grid gap-4">
-            <div
-              v-for="booking in pastBookings"
-              :key="booking._id"
-              class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer"
-              @click="selectBooking(booking)"
-            >
-              <div class="p-6">
-                <div class="flex gap-4">
-                  <div v-if="booking.business?.images?.[0]" class="flex-shrink-0">
-                    <img
-                      :src="booking.business.images[0]"
-                      alt="Business"
-                      class="w-20 h-20 rounded-lg object-cover"
-                    />
-                  </div>
-                  <div v-else class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg"></div>
-                  
-                  <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 mb-1">
-                      {{ booking.business?.name || 'Lola April Wellness Spa' }}
-                    </h3>
-                    <p class="text-sm text-gray-600 mb-2">
-                      {{ formatDateTime(booking.preferredDate, booking.preferredStartTime) }}
-                    </p>
-                    <p class="text-sm text-gray-600 mb-2">
-                      ₦{{ formatPrice(booking.estimatedTotal) }} • {{ booking.services?.length || 1 }} item{{ booking.services?.length > 1 ? 's' : '' }}
-                    </p>
-                    <button
-                      class="text-sm text-primary font-medium hover:text-primary-700"
-                      @click.stop="navigateTo('/#book')"
-                    >
-                      Book again
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <div class="bg-white rounded-2xl p-6 border-[0.5px] border-gray-100 -sm">
+        <h2 class="text-lg font-semibold">Booking volume</h2>
+        <p class="text-xs text-gray-500">Bookings trend (same period)</p>
+        <div class="mt-6">
+          <ClientOnly>
+            <apexchart
+              type="line"
+              height="160"
+              :options="bookingChartOptions"
+              :series="bookingChartSeries"
+            />
+          </ClientOnly>
+        </div>
+        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-xs text-gray-500">Upcoming</p>
+            <p class="font-semibold text-gray-900">{{ upcomingBookingsCount }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">Completed</p>
+            <p class="font-semibold text-gray-900">{{ completedAppointments }}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Appointment Detail Modal -->
-    <Transition name="modal">
-      <div
-        v-if="selectedBooking"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50"
-        @click.self="selectedBooking = null"
-      >
-        <div class="bg-white w-full sm:max-w-2xl sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto">
-          <!-- Header Image -->
-          <div class="relative h-48">
-            <img
-              v-if="selectedBooking.business?.images?.[0]"
-              :src="selectedBooking.business.images[0]"
-              alt="Business"
-              class="w-full h-full object-cover"
-            />
-            <div v-else class="w-full h-full bg-gray-300"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <h2 class="absolute bottom-4 left-6 text-2xl font-bold text-white">
-              {{ selectedBooking.business?.name || 'Lola April Wellness Spa' }}
-            </h2>
-          </div>
-
-          <!-- Status Badge -->
-          <div class="px-6 py-4 border-b border-gray-200">
-            <span
-              :class="getStatusClass(selectedBooking.status)"
-              class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
-            >
-              {{ selectedBooking.status }}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+      <div class="lg:col-span-2 bg-white rounded-2xl p-6 border-[0.5px] border-gray-100 -sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Upcoming appointments</h2>
+          <NuxtLink to="/dashboard/appointments" class="text-xs text-gray-500 hover:text-gray-900">View all</NuxtLink>
+        </div>
+        <div class="mt-4 space-y-4">
+          <div v-for="appointment in upcomingAppointments" :key="appointment._id" class="flex items-center justify-between border border-gray-100 rounded-xl p-4">
+            <div>
+              <p class="font-medium text-gray-900">{{ appointment.businessInfo?.businessName || 'Business' }}</p>
+              <p class="text-xs text-gray-500">
+                {{ formatDate(appointment.appointmentDetails?.date || appointment.selectedDate) }} · {{ appointment.serviceDetails?.serviceName || 'Services' }}
+              </p>
+            </div>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-700">
+              {{ appointment.status || 'confirmed' }}
             </span>
           </div>
-
-          <!-- Details -->
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">
-              {{ formatDateTime(selectedBooking.preferredDate, selectedBooking.preferredStartTime) }}
-            </h3>
-            <p class="text-sm text-gray-600 mb-6">
-              {{ selectedBooking.services?.[0]?.duration || 60 }} minute duration
-            </p>
-
-            <!-- Actions -->
-            <div class="flex gap-3 mb-6">
-              <button
-                class="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold py-3 rounded-full hover:bg-gray-800 transition-colors"
-                @click="navigateTo('/#book')"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Book again
-              </button>
-              <button
-                class="px-6 py-3 border-2 border-gray-900 rounded-full font-semibold hover:bg-gray-50 transition-colors"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-            </div>
-
-            <!-- Overview -->
-            <div class="border-t border-gray-200 pt-6">
-              <h4 class="font-bold text-gray-900 mb-4">Overview</h4>
-              
-              <div class="space-y-3">
-                <div
-                  v-for="service in selectedBooking.services"
-                  :key="service.serviceId"
-                  class="flex justify-between items-center"
-                >
-                  <div>
-                    <p class="font-medium text-gray-900">{{ service.serviceName }}</p>
-                    <p class="text-sm text-gray-500">{{ service.duration || 60 }} min - Me & Mine</p>
-                  </div>
-                  <p class="font-bold text-gray-900">₦{{ formatPrice(service.price) }}</p>
-                </div>
-              </div>
-
-              <div class="border-t border-gray-200 mt-4 pt-4 space-y-2">
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Subtotal</span>
-                  <span class="text-gray-900">₦{{ formatPrice(selectedBooking.estimatedTotal) }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Tax</span>
-                  <span class="text-gray-900">₦{{ formatPrice(selectedBooking.estimatedTotal * 0.075) }}</span>
-                </div>
-                <div class="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                  <span>Total</span>
-                  <span>₦{{ formatPrice(selectedBooking.estimatedTotal * 1.075) }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div v-if="!upcomingAppointments.length" class="text-sm text-gray-500">No upcoming appointments.</div>
         </div>
       </div>
-    </Transition>
+
+      <div class="bg-white rounded-2xl p-6 border-[0.5px] border-gray-100 -sm">
+        <h2 class="text-lg font-semibold">Recent bookings</h2>
+        <div class="mt-4 space-y-4">
+          <div v-for="booking in recentBookings" :key="booking._id" class="border border-gray-100 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <p class="font-medium text-gray-900">{{ booking.clientName }}</p>
+              <span class="text-xs text-gray-500">{{ formatDate(booking.createdAt) }}</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">{{ booking.services?.[0]?.serviceName || 'Service' }}</p>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700">{{ booking.status }}</span>
+              <span class="text-sm font-semibold text-gray-900">{{ formatCurrency(totalForBooking(booking)) }}</span>
+            </div>
+          </div>
+          <div v-if="!recentBookings.length" class="text-sm text-gray-500">No recent bookings.</div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="loading" class="mt-8 text-sm text-gray-500">Refreshing metrics...</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useGetMyBookings } from '@/composables/modules/booking/useGetMyBookings'
+import { computed, onMounted, ref } from 'vue'
+import type { DashboardMetrics, RevenueChartData } from '~/types/growth'
+import type { Booking } from '~/types/booking'
+import { useAnalytics } from '@/composables/modules/useAnalytics'
+import { useBooking } from '@/composables/modules/useBooking'
+import { useGetAppointmentStats } from '@/composables/modules/appointment/useGetAppointmentStats'
+import { useGetAppointments } from '@/composables/modules/appointment/useGetAppointments'
 
 definePageMeta({
-  layout: 'dashboard',
-  middleware: 'auth'
+  layout: 'dashboard'
 })
 
-const { loading, bookings, getMyBookings, error } = useGetMyBookings()
-const selectedBooking = ref<any>(null)
+const { dashboardMetrics, loading: analyticsLoading, fetchDashboardMetrics, fetchRevenueTrends } = useAnalytics()
+const { bookings, loading: bookingLoading, fetchUpcomingBookings, fetchBookings } = useBooking()
+const { data: appointmentStats, loading: appointmentStatsLoading, execute: fetchAppointmentStats } = useGetAppointmentStats()
+const { data: appointments, loading: appointmentsLoading, execute: fetchAppointments } = useGetAppointments()
 
-const upcomingBookings = computed(() => {
-  return bookings.value.filter((booking: any) => {
-    const bookingDate = new Date(booking.preferredDate)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return bookingDate >= today && booking.status !== 'cancelled' && booking.status !== 'completed'
-  })
+const trends = ref<RevenueChartData[]>([])
+const selectedRange = ref('14d')
+
+const rangeOptions = [
+  { label: '7d', value: '7d' },
+  { label: '14d', value: '14d' },
+  { label: '30d', value: '30d' }
+]
+
+const rangeLabel = computed(() => selectedRange.value.replace('d', ' days'))
+
+const metricCards = computed(() => {
+  const metrics: DashboardMetrics | null = dashboardMetrics.value
+  const overview = appointmentStats.value?.overview || {}
+  return [
+    {
+      label: 'Today bookings',
+      value: overview?.todayAppointments ?? metrics?.today?.bookings ?? 0,
+      sub: 'Appointments scheduled today'
+    },
+    {
+      label: 'Today revenue',
+      value: formatCurrency(metrics?.today?.revenue ?? 0),
+      sub: 'Gross revenue today'
+    },
+    {
+      label: 'Month-to-date revenue',
+      value: formatCurrency(metrics?.monthToDate?.revenue ?? 0),
+      sub: `Bookings: ${metrics?.monthToDate?.bookings ?? 0}`
+    },
+    {
+      label: 'Pending appointments',
+      value: overview?.pending ?? metrics?.pending?.bookings ?? 0,
+      sub: `Confirmed: ${overview?.confirmed ?? 0}`
+    }
+  ]
 })
 
-const pastBookings = computed(() => {
-  return bookings.value.filter((booking: any) => {
-    const bookingDate = new Date(booking.preferredDate)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return bookingDate < today || booking.status === 'completed' || booking.status === 'cancelled'
-  })
+const upcomingAppointments = computed(() => (appointments.value || []).slice(0, 5))
+const recentBookings = computed(() => (bookings.value || []).slice(0, 5))
+
+const upcomingBookingsCount = computed(() => bookings.value?.length || 0)
+const completedAppointments = computed(() => appointmentStats.value?.overview?.completed || 0)
+
+const loading = computed(() =>
+  analyticsLoading.value || bookingLoading.value || appointmentStatsLoading.value || appointmentsLoading.value
+)
+
+// ApexCharts configuration for Revenue Chart
+const revenueChartSeries = computed(() => [{
+  name: 'Revenue',
+  data: revenueValues.value
+}])
+
+const revenueChartOptions = computed(() => ({
+  chart: {
+    type: 'area',
+    height: 200,
+    toolbar: { show: false },
+    zoom: { enabled: false }
+  },
+  colors: ['#7c3aed'],
+  dataLabels: { enabled: false },
+  stroke: {
+    curve: 'smooth',
+    width: 2
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.35,
+      opacityTo: 0,
+      stops: [0, 100]
+    }
+  },
+  grid: {
+    borderColor: '#f3f4f6',
+    strokeDashArray: 4
+  },
+  xaxis: {
+    categories: trends.value.map((_: any, idx: number) => `Day ${idx + 1}`),
+    labels: {
+      style: { colors: '#9ca3af', fontSize: '11px' }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: { colors: '#9ca3af', fontSize: '11px' },
+      formatter: (value: number) => formatCurrency(value)
+    }
+  },
+  tooltip: {
+    y: {
+      formatter: (value: number) => formatCurrency(value)
+    }
+  }
+}))
+
+// ApexCharts configuration for Booking Chart
+const bookingChartSeries = computed(() => [{
+  name: 'Bookings',
+  data: bookingValues.value
+}])
+
+const bookingChartOptions = computed(() => ({
+  chart: {
+    type: 'line',
+    height: 160,
+    toolbar: { show: false },
+    zoom: { enabled: false }
+  },
+  colors: ['#0f172a'],
+  dataLabels: { enabled: false },
+  stroke: {
+    curve: 'smooth',
+    width: 3
+  },
+  grid: {
+    borderColor: '#f3f4f6',
+    strokeDashArray: 4
+  },
+  xaxis: {
+    categories: trends.value.map((_: any, idx: number) => `Day ${idx + 1}`),
+    labels: {
+      style: { colors: '#9ca3af', fontSize: '10px' }
+    }
+  },
+  yaxis: {
+    labels: {
+      style: { colors: '#9ca3af', fontSize: '10px' }
+    }
+  },
+  tooltip: {
+    y: {
+      formatter: (value: number) => `${value} bookings`
+    }
+  }
+}))
+
+const revenueValues = computed(() => {
+  const series = buildSeries(trends.value, 'revenue')
+  console.log('Revenue values for chart:', series)
+  return series
 })
 
-const formatDateTime = (dateStr: string, timeStr: string) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'short' })
-  const day = date.getDate()
-  const month = date.toLocaleDateString('en-US', { month: 'short' })
-  const year = date.getFullYear()
-  
-  return `${dayName}, ${day} ${month} ${year} at ${timeStr}`
-}
-
-const formatPrice = (price: number) => {
-  if (!price) return '0'
-  return Math.round(price).toLocaleString('en-NG')
-}
-
-const getStatusClass = (status: string) => {
-  const statusLower = status.toLowerCase()
-  if (statusLower === 'confirmed') return 'bg-green-100 text-green-800'
-  if (statusLower === 'pending') return 'bg-yellow-100 text-yellow-800'
-  if (statusLower === 'cancelled') return 'bg-red-100 text-red-800'
-  if (statusLower === 'completed') return 'bg-blue-100 text-blue-800'
-  return 'bg-gray-100 text-gray-800'
-}
-
-const selectBooking = (booking: any) => {
-  selectedBooking.value = booking
-}
-
-onMounted(() => {
-  getMyBookings()
+const bookingValues = computed(() => {
+  const series = buildSeries(trends.value, 'bookings')
+  console.log('Booking values for chart:', series)
+  return series
 })
-</script>
 
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.3s ease;
+const setRange = async (value: string) => {
+  selectedRange.value = value
+  await loadTrends()
 }
 
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-  transform: translateY(100%);
-}
+const loadTrends = async () => {
+  const days = Number(selectedRange.value.replace('d', ''))
+  const endDate = new Date()
+  const startDate = new Date()
+  startDate.setDate(endDate.getDate() - days)
 
-@media (min-width: 640px) {
-  .modal-enter-from,
-  .modal-leave-to {
-    transform: translateY(0) scale(0.9);
+  try {
+    console.log(`Loading trends for ${days} days from ${startDate.toISOString()} to ${endDate.toISOString()}`)
+    const data = await fetchRevenueTrends(startDate.toISOString(), endDate.toISOString(), 'daily')
+    console.log('Revenue trends API response:', JSON.stringify(data, null, 2))
+    
+    // Handle both array response (time series) and single aggregate object
+    if (Array.isArray(data)) {
+      trends.value = data
+      console.log('Set trends from array:', trends.value.length, 'items')
+    } else if (data && typeof data === 'object') {
+      // Single aggregate response - spread across time period for visualization
+      const aggregateValue = {
+        date: data?.period?.end || endDate.toISOString(),
+        revenue: data?.revenue?.gross ?? 0,
+        bookings: data?.bookings?.total ?? 0
+      }
+      console.log('Creating trend array from aggregate:', aggregateValue)
+      
+      // Create array with same values for smooth line rendering
+      trends.value = Array(days).fill(null).map((_, idx) => ({
+        date: new Date(startDate.getTime() + idx * 24 * 60 * 60 * 1000).toISOString(),
+        revenue: aggregateValue.revenue,
+        bookings: aggregateValue.bookings
+      }))
+      console.log('Set trends from aggregate:', trends.value.length, 'items')
+    } else {
+      console.warn('No valid data received from API')
+      trends.value = []
+    }
+  } catch (error: any) {
+    console.error('Error loading trends:', error.response?.data || error.message)
+    // Create fallback data with zeros to at least show something
+    trends.value = []
   }
 }
-</style>
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount)
+}
+
+const formatDate = (date?: string) => {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString()
+}
+
+const totalForBooking = (booking: Booking) => {
+  // totalAmount is always present per Booking interface
+  return booking.totalAmount || 0
+}
+
+const buildSeries = (data: RevenueChartData[], key: 'revenue' | 'bookings') => {
+  if (!data.length) {
+    console.log(`buildSeries: no data for ${key}, returning zeros`)
+    return [0, 0, 0, 0, 0, 0, 0]
+  }
+  if (data.length === 1) {
+    console.log(`buildSeries: single data point for ${key}:`, data[0][key])
+    return new Array(7).fill(data[0][key] || 0)
+  }
+  const series = data.map(item => item[key] || 0)
+  console.log(`buildSeries: ${key} series:`, series)
+  return series
+}
+
+onMounted(async () => {
+  await Promise.all([
+    fetchDashboardMetrics(),
+    fetchUpcomingBookings(7),
+    fetchBookings({ limit: 5 }),
+    fetchAppointmentStats(),
+    fetchAppointments({ status: 'confirmed', limit: 5 })
+  ])
+  await loadTrends()
+})
+</script>

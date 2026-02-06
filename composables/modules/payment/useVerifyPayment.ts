@@ -1,23 +1,25 @@
-import { payment_api } from "@/api_factory/modules/payment"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import { payment_api } from '@/api_factory/modules'
 
 export const useVerifyPayment = () => {
-    const loading = ref(false)
-    const error = ref<string | null>(null)
-    const { startLoading, stopLoading } = useLoader()
+  const data = ref<any>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-    const verifyPayment = async (reference: string) => {
-        loading.value = true
-        startLoading('Verifying your payment...')
-        try {
-            const res = (await payment_api.verifyPayment(reference)) as any
-            console.log("Verify Payment Response:", res)
-            return res.data.data
-        } finally {
-            stopLoading()
-            // loading.value = false
-        }
+  const execute = async (reference: string) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await payment_api.verifyPayment(reference)
+      data.value = response.data?.data || response.data
+      return data.value
+    } catch (e: any) {
+      error.value = e.message
+      throw e
+    } finally {
+      loading.value = false
     }
+  }
 
-    return { loading, error, verifyPayment }
+  return { data, loading, error, execute }
 }

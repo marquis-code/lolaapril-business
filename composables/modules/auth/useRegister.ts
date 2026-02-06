@@ -1,33 +1,35 @@
-import { auth_api } from "@/api_factory/modules/auth"
-import { useCustomToast } from "@/composables/core/useCustomToast"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import type { BusinessRegisterDto, AuthResponse } from '~/types/auth'
+import { useUser } from '@/composables/modules/auth/user'
+import { auth_api } from '~/api_factory/modules'
 
 export const useRegister = () => {
+    const data = ref<AuthResponse | null>(null)
     const loading = ref(false)
     const error = ref<string | null>(null)
-    const { showToast } = useCustomToast()
-    const { startLoading, stopLoading } = useLoader()
+    const router = useRouter()
+    const { createUser } = useUser()
 
-    const register = async (payload: any) => {
-        // loading.value = true
+    const register = async (payload: BusinessRegisterDto) => {
+        loading.value = true
         error.value = null
-        startLoading('Registering your account...')
         try {
-            const res = (await auth_api.register(payload)) as any
-            if (res.status === 201 || res.status === 200) {
-                showToast({
-                    title: "Success",
-                    message: "Registration successful",
-                    toastType: "success",
-                    duration: 3000,
-                })
-                return res.data
-            }
+            const response = await auth_api.register(payload)
+            createUser(response.data)
+            router.push('/auth/login?registered=success')
+            return response.data
+        } catch (e: any) {
+            error.value = e.message
+            throw e
         } finally {
-            stopLoading()
-            // loading.value = false
+            loading.value = false
         }
     }
 
-    return { loading, error, register }
+    return {
+        data,
+        loading,
+        error,
+        register
+    }
 }

@@ -1,36 +1,25 @@
-// useGetAvailableSlots.ts
-import { availability_api } from "@/api_factory/modules/availability"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import { availability_api } from '@/api_factory/modules'
 
 export const useGetAvailableSlots = () => {
-    // const loading = ref(false)
-    const error = ref<string | null>(null)
-    const slots = ref<string[]>([])
-    const { startLoading, stopLoading } = useLoader()
+  const data = ref<any>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-    const getAvailableSlots = async (params: { 
-        subdomain?: string
-        businessId?: string
-        date: string
-        serviceIds: string[] 
-    }) => {
-        // loading.value = true
-        error.value = null
-        slots.value = []
-        startLoading('Fetching available slots...')
-        try {
-            const res = (await availability_api.getAvailableSlots(params)) as any
-            if (res.data?.success) {
-                const result = res.data.data
-                if (Array.isArray(result)) slots.value = result
-                else if (result.slots) slots.value = result.slots
-                else if (result.availableSlots) slots.value = result.availableSlots
-            }
-        } finally {
-            stopLoading()
-            // loading.value = false
-        }
+  const execute = async (params: { date: string; serviceIds?: string[]; subdomain?: string; businessId?: string; staffId?: string }) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await availability_api.getAvailableSlots(params)
+      data.value = response.data?.data || response.data
+      return data.value
+    } catch (e: any) {
+      error.value = e.message
+      throw e
+    } finally {
+      loading.value = false
     }
+  }
 
-    return { error, slots, getAvailableSlots }
+  return { data, loading, error, execute }
 }

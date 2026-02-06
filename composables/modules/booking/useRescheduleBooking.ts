@@ -1,30 +1,25 @@
-import { booking_api } from "@/api_factory/modules/booking"
-import { useCustomToast } from "@/composables/core/useCustomToast"
-import { useLoader } from "@/composables/core/useLoader"
+import { ref } from 'vue'
+import { booking_api } from '~/api_factory/modules'
 
 export const useRescheduleBooking = () => {
-    const loading = ref(false)
-    const error = ref<string | null>(null)
-    const { showToast } = useCustomToast()
-        const { startLoading, stopLoading } = useLoader()
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-    const rescheduleBooking = async (id: string, payload: { newPreferredDate: string, newPreferredStartTime: string, reason: string }) => {
-        loading.value = true
-        error.value = null
-         startLoading('Rescheduling your booking...')
-        try {
-            const res = (await booking_api.rescheduleBooking(id, payload)) as any
-            showToast({
-                title: 'Success',
-                message: 'Booking rescheduled successfully',
-                toastType: 'success'
-            })
-            return res.data
-        } finally {
-            stopLoading()
-            // loading.value = false
-        }
+  const execute = async (id: string, payload: { newPreferredDate: string; newPreferredStartTime: string; reason: string }) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await booking_api.rescheduleBooking(id, payload)
+      return response.data?.data || response.data
+    } catch (e: any) {
+      error.value = e.message
+      throw e
+    } finally {
+      loading.value = false
     }
+  }
 
-    return { loading, error, rescheduleBooking }
+  const rescheduleBooking = execute
+
+  return { loading, error, execute, rescheduleBooking }
 }

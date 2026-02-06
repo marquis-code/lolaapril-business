@@ -165,7 +165,7 @@
                     <div class="flex items-center justify-between">
                       <label class="flex items-center">
                         <input type="checkbox" v-model="rememberMe" class="custom-checkbox" />
-                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        <span class="ml-6 text-sm text-gray-600">Remember me</span>
                       </label>
                       <button 
                         type="button" 

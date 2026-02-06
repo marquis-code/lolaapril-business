@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --port 3002",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -21,13 +21,17 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/core": "^13.0.0",
+    "apexcharts": "^5.3.6",
     "axios": "^1.10.0",
+    "chart.js": "^4.5.0",
     "firebase": "^12.8.0",
     "jspdf": "^4.0.0",
     "lucide-vue-next": "^0.562.0",
     "nuxt": "^4.2.2",
+    "socket.io-client": "^4.7.5",
     "vue": "^3.5.26",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "vue3-apexcharts": "^1.10.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.15",
