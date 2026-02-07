@@ -6,6 +6,7 @@ import type {
     BusinessHours
 } from '~/types/settings'
 import { settings_api } from '~/api_factory/modules'
+import { useAuth } from '@/composables/modules/useAuth'
 
 export const useSettings = () => {
     const businessId = useCookie('businessId')
@@ -26,7 +27,8 @@ export const useSettings = () => {
         loading.value = true
         try {
             const { data } = await settings_api.getSettings()
-            settings.value = data.data || data
+            console.log('Fetched settings:', data)
+            settings.value =  data
         } catch (e: any) {
             error.value = e.message
         } finally {
@@ -47,7 +49,7 @@ export const useSettings = () => {
     const createSettings = async (payload: BusinessSettings) => {
         try {
             const { data } = await settings_api.createSettings(payload)
-            settings.value = data.data || data
+            settings.value = data
             return data
         } catch (e: any) {
             throw e
@@ -66,7 +68,8 @@ export const useSettings = () => {
     const fetchBusinessHours = async () => {
         try {
             const { data } = await settings_api.getBusinessHours()
-            businessHours.value = data.data || data
+            console.log('Fetched business hours:', data)
+            businessHours.value = data
         } catch (e: any) {
             console.error(e)
         }
@@ -85,7 +88,8 @@ export const useSettings = () => {
     const fetchAppointmentSettings = async () => {
         try {
             const { data } = await settings_api.getAppointmentSettings()
-            appointmentSettings.value = data.data || data
+            console.log('Fetched appointment settings:', data)
+            appointmentSettings.value = data
         } catch (e: any) {
             console.error(e)
         }
@@ -94,7 +98,8 @@ export const useSettings = () => {
     const updateAppointmentSettings = async (payload: Record<string, any>) => {
         try {
             const { data } = await settings_api.updateAppointmentSettings(payload)
-            appointmentSettings.value = data.data || data
+            console.log('Updated appointment settings:', data)
+            appointmentSettings.value = data
             return data
         } catch (e: any) {
             throw e

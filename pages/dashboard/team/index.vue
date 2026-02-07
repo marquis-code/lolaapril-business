@@ -258,7 +258,7 @@
                   />
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">{{ getServiceName(service) }}</p>
-                    {{ service }}
+                    <!-- {{ service }} -->
                     <p class="text-xs text-gray-500">{{ getServiceCategory(service) }}</p>
                   </div>
                 </label>

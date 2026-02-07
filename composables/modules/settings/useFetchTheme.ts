@@ -3,18 +3,17 @@ import type { BusinessTheme } from '~/types/settings'
 import { settings_api } from '~/api_factory/modules'
 
 export const useFetchTheme = () => {
-    const businessId = useCookie('businessId')
     const data = ref<BusinessTheme | null>(null)
     const loading = ref(false)
     const error = ref<string | null>(null)
 
     const execute = async () => {
-        if (!businessId.value) return null
-
         loading.value = true
         error.value = null
+        console.log('Fetching theme...')
         try {
-            const response = await settings_api.getTheme(businessId.value)
+            const response = await settings_api.getTheme()
+            console.log('Fetched theme response:', response)
             data.value = response.data
             return data.value
         } catch (e: any) {
@@ -24,6 +23,10 @@ export const useFetchTheme = () => {
             loading.value = false
         }
     }
+
+    onMounted(() => {
+        execute()
+    })
 
     return { data, loading, error, execute }
 }

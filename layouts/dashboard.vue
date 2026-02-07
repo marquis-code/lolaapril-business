@@ -1,11 +1,17 @@
 <template>
   <FullScreenLoader />
-  <div class="min-h-screen bg-gray-50">
+  <AddBusinessModal v-model="showAddBusinessModal" @success="handleBusinessAdded" />
+  <div class="min-h-screen bg-white">
     <!-- Desktop Sidebar -->
     <aside class="hidden lg:flex lg:flex-col w-64 bg-white border-r-[0.5px] border-gray-50 h-screen fixed left-0 top-0 shadow-sm">
       <!-- Logo -->
       <div class="p-6 border-b border-gray-100 flex-shrink-0">
         <img src="@/assets/img/logo.png" class="h-10 w-auto" alt="Logo" />
+      </div>
+
+      <!-- Business Switcher -->
+      <div class="px-4 py-3 border-b border-gray-100 flex-shrink-0">
+        <BusinessSwitcher @add-business="showAddBusinessModal = true" />
       </div>
       
       <!-- Navigation - Scrollable -->
@@ -126,6 +132,11 @@
               <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
             </div>
           </div>
+        </div>
+
+        <!-- Mobile Business Switcher -->
+        <div class="px-4 py-3 border-b border-gray-100 flex-shrink-0">
+          <BusinessSwitcher @add-business="showAddBusinessModal = true; showMobileMenu = false" />
         </div>
         
         <!-- Mobile Navigation - Scrollable -->
@@ -311,12 +322,15 @@ import { useTokenRefresh } from '@/composables/core/useTokenRefresh'
 import { useFetchNotificationLogs } from '@/composables/modules/notification/useFetchNotificationLogs'
 import { useChatNotifications, cleanupChatNotifications } from '@/composables/modules/chat/useChatNotifications'
 import { useUnreadCounts } from '@/composables/modules/chat/useUnreadCounts'
+import BusinessSwitcher from '@/components/business/BusinessSwitcher.vue'
+import AddBusinessModal from '@/components/business/AddBusinessModal.vue'
 
 const route = useRoute()
 const router = useRouter()
 const { user, logOut } = useUser()
 const showMobileMenu = ref(false)
 const logoutModalOpen = ref(false)
+const showAddBusinessModal = ref(false)
 
 // Initialize token refresh
 const { startTokenRefresh, stopTokenRefresh } = useTokenRefresh()
@@ -396,7 +410,7 @@ const navItems = [
   
   // Finance & Payments
   { path: '/dashboard/payments', label: 'Payments', icon: icons.payments },
-  { path: '/dashboard/wallet', label: 'Wallet', icon: icons.wallet },
+  // { path: '/dashboard/wallet', label: 'Wallet', icon: icons.wallet },
   { path: '/dashboard/sales', label: 'Sales', icon: icons.sales },
   { path: '/dashboard/pricing', label: 'Pricing', icon: icons.pricing },
   { path: '/dashboard/commission', label: 'Commissions', icon: icons.commission },
@@ -420,19 +434,19 @@ const navItems = [
   { path: '/dashboard/branding', label: 'Branding', icon: icons.branding },
   
   // Orders & Forms
-  { path: '/dashboard/orders', label: 'Product Orders', icon: icons.orders },
-  { path: '/dashboard/forms', label: 'Forms', icon: icons.forms },
+  // { path: '/dashboard/orders', label: 'Product Orders', icon: icons.orders },
+  // { path: '/dashboard/forms', label: 'Forms', icon: icons.forms },
   
   // User & Settings
-  { path: '/dashboard/profile', label: 'Profile', icon: icons.profile },
-  { path: '/dashboard/favorites', label: 'Favorites', icon: icons.favorites },
+  // { path: '/dashboard/profile', label: 'Profile', icon: icons.profile },
+  // { path: '/dashboard/favorites', label: 'Favorites', icon: icons.favorites },
   { path: '/dashboard/support', label: 'Support', icon: icons.support },
   { path: '/dashboard/settings', label: 'Settings', icon: icons.settings },
 ]
 
 const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard': { title: 'Dashboard', description: 'Overview of your business statistics' },
-  '/dashboard/profile': { title: 'My Profile', description: 'Manage your personal information' },
+  // '/dashboard/profile': { title: 'My Profile', description: 'Manage your personal information' },
   '/dashboard/bookings-management': { title: 'Bookings', description: 'Manage business bookings and client requests' },
   '/dashboard/appointments': { title: 'Appointments', description: 'Manage business appointments and staff schedules' },
   '/dashboard/availability': { title: 'Availability', description: 'Manage business hours and staff availability' },
@@ -454,8 +468,8 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard/team': { title: 'Team', description: 'Manage team members, roles, and departments' },
   '/dashboard/branding': { title: 'Branding', description: 'Customize your theme, domains, templates, and widgets' },
   '/dashboard/orders': { title: 'Product Orders', description: 'Track your product purchases' },
-  '/dashboard/forms': { title: 'Forms', description: 'View and complete your forms' },
-  '/dashboard/favorites': { title: 'Favorites', description: 'Your saved businesses and services' },
+  // '/dashboard/forms': { title: 'Forms', description: 'View and complete your forms' },
+  // '/dashboard/favorites': { title: 'Favorites', description: 'Your saved businesses and services' },
   '/dashboard/support': { title: 'Support', description: 'Get help and contact support' },
   '/dashboard/settings': { title: 'Settings', description: 'Customize your preferences' }
 }
@@ -491,6 +505,11 @@ const handleLogout = async () => {
   } catch (err) {
     console.error(err)
   }
+}
+
+const handleBusinessAdded = (business: any) => {
+  console.log('New business added:', business)
+  // The modal will handle the reload prompt
 }
 
 const confirmLogout = () => {

@@ -7,21 +7,57 @@
           <div class="bg-gray-200 rounded-xl h-24"></div>
         </div>
         <template v-else>
-          <div class="bg-white rounded-xl border border-gray-100 p-5">
-            <p class="text-xs text-gray-500">Total Appointments</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.total || 0 }}</p>
+          <div class="bg-gray-50 rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.total || 0 }}</p>
+                <p class="text-xs text-gray-500">Total Appointments</p>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl border border-gray-100 p-5">
-            <p class="text-xs text-gray-500">Upcoming</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.upcoming || 0 }}</p>
+          <div class="bg-gray-50 rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.upcoming || 0 }}</p>
+                <p class="text-xs text-gray-500">Upcoming</p>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl border border-gray-100 p-5">
-            <p class="text-xs text-gray-500">Completed</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.completed || 0 }}</p>
+          <div class="bg-gray-50 rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.completed || 0 }}</p>
+                <p class="text-xs text-gray-500">Completed</p>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl border border-gray-100 p-5">
-            <p class="text-xs text-gray-500">Cancelled</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.cancelled || 0 }}</p>
+          <div class="bg-gray-50 rounded-xl border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ stats?.overview?.cancelled || 0 }}</p>
+                <p class="text-xs text-gray-500">Cancelled</p>
+              </div>
+            </div>
           </div>
         </template>
       </section>
@@ -54,9 +90,18 @@
                 placeholder="All Staff"
               />
             </div>
+            <div class="min-w-[140px]">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Go to Date</label>
+              <input
+                v-model="goToDateInput"
+                type="date"
+                @change="navigateToDate"
+                class="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm focus:border-[#005967] focus:ring-[#005967] focus:ring-1 outline-none"
+              />
+            </div>
             <button
               @click="handleTodayClick"
-              class="h-10 px-4 rounded-lg text-sm font-medium text-primary border border-primary/30 hover:bg-primary/5"
+              class="h-10 px-4 rounded-lg text-sm font-medium text-[#005967] border border-[#005967]/30 hover:bg-[#005967]/5 transition-colors"
             >
               Today
             </button>
@@ -71,36 +116,40 @@
           <div class="flex items-center gap-4">
             <button
               @click="previousMonth"
-              class="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              class="p-2 rounded-lg hover:bg-[#005967]/5 text-gray-600 hover:text-[#005967] transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h3 class="text-lg font-semibold text-gray-900">
+            <h3 class="text-lg font-semibold text-gray-900 min-w-[180px] text-center">
               {{ currentMonthYear }}
             </h3>
             <button
               @click="nextMonth"
-              class="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              class="p-2 rounded-lg hover:bg-[#005967]/5 text-gray-600 hover:text-[#005967] transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="flex items-center gap-1 text-xs text-gray-500">
-              <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <div class="w-2.5 h-2.5 rounded-full bg-[#005967]"></div>
               <span>Confirmed</span>
             </div>
-            <div class="flex items-center gap-1 text-xs text-gray-500">
-              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <div class="w-2.5 h-2.5 rounded-full bg-[#005967]/40"></div>
               <span>Pending</span>
             </div>
-            <div class="flex items-center gap-1 text-xs text-gray-500">
-              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <div class="w-2.5 h-2.5 rounded-full bg-[#005967]/70"></div>
               <span>Completed</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+              <span>Cancelled</span>
             </div>
           </div>
         </div>
@@ -131,10 +180,10 @@
               v-for="day in calendarDays"
               :key="day.key"
               :class="[
-                'relative border rounded-lg p-2 min-h-[100px] transition-colors',
-                day.isCurrentMonth ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-100',
-                day.isToday ? 'ring-2 ring-primary' : '',
-                day.appointments.length > 0 ? 'cursor-pointer hover:bg-gray-50' : ''
+                'relative border rounded-xl p-2 min-h-[100px] transition-all',
+                day.isCurrentMonth ? 'bg-white border-gray-200 hover:border-[#005967]/30' : 'bg-gray-50/50 border-gray-100',
+                day.isToday ? 'ring-2 ring-[#005967] border-[#005967]' : '',
+                day.appointments.length > 0 ? 'cursor-pointer hover:shadow-md' : ''
               ]"
               @click="day.appointments.length > 0 ? openDayDetails(day) : null"
             >
@@ -144,14 +193,14 @@
                   :class="[
                     'text-sm font-medium',
                     day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
-                    day.isToday ? 'text-primary font-bold' : ''
+                    day.isToday ? 'text-[#005967] font-bold' : ''
                   ]"
                 >
                   {{ day.date }}
                 </span>
                 <span
                   v-if="day.appointments.length > 0"
-                  class="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full"
+                  class="text-xs font-semibold text-[#005967] bg-[#005967]/10 px-2 py-0.5 rounded-full"
                 >
                   {{ day.appointments.length }}
                 </span>
@@ -433,6 +482,7 @@ const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const filterStatus = ref('')
 const filterStaff = ref('')
 const currentDate = ref(new Date())
+const goToDateInput = ref('')
 
 const selectedDay = ref<any>(null)
 const selectedAppointment = ref<any>(null)
@@ -612,6 +662,14 @@ const nextMonth = () => {
 
 const handleTodayClick = () => {
   currentDate.value = new Date()
+  goToDateInput.value = ''
+}
+
+const navigateToDate = () => {
+  if (goToDateInput.value) {
+    const selectedDate = new Date(goToDateInput.value)
+    currentDate.value = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+  }
 }
 
 const openDayDetails = (day: any) => {
@@ -635,45 +693,46 @@ const formatDate = (dateString?: string) => {
 const statusBadge = (status?: string) => {
   switch ((status || '').toLowerCase()) {
     case 'confirmed':
-      return 'bg-blue-50 text-blue-700'
+      return 'bg-[#005967]/10 text-[#005967]'
     case 'completed':
-      return 'bg-green-50 text-green-700'
+      return 'bg-[#005967]/20 text-[#004450]'
     case 'cancelled':
-      return 'bg-red-50 text-red-700'
+      return 'bg-gray-100 text-gray-600'
     case 'no_show':
-      return 'bg-yellow-50 text-yellow-700'
+      return 'bg-gray-200 text-gray-700'
     default:
-      return 'bg-gray-100 text-gray-700'
+      return 'bg-[#005967]/5 text-[#005967]/80'
   }
 }
 
 const getAppointmentColor = (status?: string) => {
   switch ((status || '').toLowerCase()) {
     case 'confirmed':
-      return 'bg-blue-50 text-blue-700'
+      return 'bg-[#005967]/10 text-[#005967]'
     case 'completed':
-      return 'bg-green-50 text-green-700'
+      return 'bg-[#005967]/20 text-[#004450]'
     case 'cancelled':
-      return 'bg-red-50 text-red-700'
+      return 'bg-gray-100 text-gray-500'
     case 'no_show':
-      return 'bg-yellow-50 text-yellow-700'
+      return 'bg-gray-200 text-gray-600'
     default:
-      return 'bg-gray-100 text-gray-700'
+      return 'bg-[#005967]/5 text-[#005967]/70'
   }
 }
 
 const getAppointmentDotColor = (status?: string) => {
   switch ((status || '').toLowerCase()) {
     case 'confirmed':
-      return 'bg-blue-500'
-    case 'completed':  return 'bg-green-500'
-case 'cancelled':
-  return 'bg-red-500'
-case 'no_show':
-  return 'bg-yellow-500'
-default:
-  return 'bg-gray-400'
-}
+      return 'bg-[#005967]'
+    case 'completed':
+      return 'bg-[#005967]/70'
+    case 'cancelled':
+      return 'bg-gray-300'
+    case 'no_show':
+      return 'bg-gray-400'
+    default:
+      return 'bg-[#005967]/40'
+  }
 }
 
 const refreshAppointments = async () => {

@@ -229,8 +229,8 @@
                   </label>
                   <button type="button" @click="addPaymentMethod" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
-                <div v-if="form.settings.paymentMethods.length" class="mt-3 space-y-2">
-                  <div v-for="(method, index) in form.settings.paymentMethods" :key="`${method.name}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+                <div v-if="form.paymentSettings.paymentMethods.length" class="mt-3 space-y-2">
+                  <div v-for="(method, index) in form.paymentSettings.paymentMethods" :key="`${method.name}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
                     <div class="text-sm text-gray-700">{{ method.name }} • {{ method.paymentType }}</div>
                     <button type="button" @click="removePaymentMethod(index)" class="text-red-600 text-sm">Remove</button>
                   </div>
@@ -244,8 +244,8 @@
                   <UiAnimatedInput v-model.number="taxDraft.taxRate" type="number" label="Tax Rate" placeholder="Rate" />
                   <button type="button" @click="addTax" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
-                <div v-if="form.settings.taxes.length" class="mt-3 space-y-2">
-                  <div v-for="(tax, index) in form.settings.taxes" :key="`${tax.taxName}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+                <div v-if="form.paymentSettings.taxes.length" class="mt-3 space-y-2">
+                  <div v-for="(tax, index) in form.paymentSettings.taxes" :key="`${tax.taxName}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
                     <div class="text-sm text-gray-700">{{ tax.taxName }} • {{ tax.taxRate }}%</div>
                     <button type="button" @click="removeTax(index)" class="text-red-600 text-sm">Remove</button>
                   </div>
@@ -284,8 +284,8 @@
                 </label>
                 <button type="button" @click="addServiceCharge" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
               </div>
-              <div v-if="form.settings.serviceCharges.length" class="mt-3 space-y-2">
-                <div v-for="(charge, index) in form.settings.serviceCharges" :key="`${charge.basicInfo.name}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+              <div v-if="form.paymentSettings.serviceCharges.length" class="mt-3 space-y-2">
+                <div v-for="(charge, index) in form.paymentSettings.serviceCharges" :key="`${charge.basicInfo.name}-${index}`" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
                   <div class="text-sm text-gray-700">{{ charge.basicInfo.name }} • {{ charge.rateType.type }} • {{ charge.taxRate.tax }}</div>
                   <button type="button" @click="removeServiceCharge(index)" class="text-red-600 text-sm">Remove</button>
                 </div>
@@ -349,15 +349,27 @@
                <button @click="addDomain" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800">Connect Domain</button>
             </div>
 
-            <div v-if="domains.length > 0" class="space-y-3">
-               <div v-for="d in domains" :key="d._id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
-                  <div class="font-medium text-gray-900">{{ d.domain }}</div>
-                  <span
-                    class="px-2 py-1 rounded-full text-xs font-medium capitalize"
-                    :class="d.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
-                  >
-                    {{ d.status }}
-                  </span>
+            <div v-if="mapDomains.length > 0" class="space-y-3">
+               <div v-for="d in mapDomains" :key="d.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <div>
+                    <div class="font-medium text-gray-900">{{ d.domain }}</div>
+                    <div v-if="d.subdomain" class="text-xs text-gray-500">{{ d.subdomain }}</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="px-2 py-1 rounded-full text-xs font-medium capitalize"
+                      :class="d.status === 'verified' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                    >
+                      {{ d.status }}
+                    </span>
+                    <span
+                      v-if="d.sslStatus && d.sslStatus !== 'unknown'"
+                      class="px-2 py-1 rounded-full text-xs font-medium capitalize"
+                      :class="d.sslStatus === 'active' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'"
+                    >
+                      SSL: {{ d.sslStatus }}
+                    </span>
+                  </div>
                </div>
             </div>
             <div v-else class="text-center text-gray-500 py-4">No custom domains connected</div>
@@ -375,7 +387,6 @@ import type {
   BlockedTimeType,
   BusinessHours,
   BusinessSettings,
-  BusinessTheme,
   CancellationReason,
   ClosedPeriod,
   NotificationPreferences,
@@ -390,15 +401,19 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-// Options arrays for select inputs
+// ==================== OPTIONS ====================
 const currencyOptions = [
   { label: 'Nigerian Naira (NGN)', value: 'NGN' },
-  { label: 'US Dollar (USD)', value: 'USD' }
+  { label: 'US Dollar (USD)', value: 'USD' },
+  { label: 'British Pound (GBP)', value: 'GBP' },
+  { label: 'Euro (EUR)', value: 'EUR' }
 ]
 
 const timezoneOptions = [
-  { label: 'Africa/Lagos', value: 'Africa/Lagos' },
-  { label: 'UTC', value: 'UTC' }
+  { label: 'Africa/Lagos (WAT)', value: 'Africa/Lagos' },
+  { label: 'UTC', value: 'UTC' },
+  { label: 'Europe/London', value: 'Europe/London' },
+  { label: 'America/New_York', value: 'America/New_York' }
 ]
 
 const cancellationReasonTypeOptions = [
@@ -427,11 +442,13 @@ const rateTypeOptions = [
 ]
 
 const fontFamilyOptions = [
-  { label: 'Inter', value: 'Inter' },
-  { label: 'Roboto', value: 'Roboto' },
-  { label: 'Poppins', value: 'Poppins' }
+  { label: 'Inter', value: 'Inter, sans-serif' },
+  { label: 'Roboto', value: 'Roboto, sans-serif' },
+  { label: 'Poppins', value: 'Poppins, sans-serif' },
+  { label: 'Open Sans', value: 'Open Sans, sans-serif' }
 ]
 
+// ==================== COMPOSABLE ====================
 const {
   fetchSettings,
   updateSettings,
@@ -456,7 +473,11 @@ const {
   loading
 } = useSettings()
 
+// ==================== STATE ====================
 const activeTab = ref('business')
+const newDomain = ref('')
+const saving = ref(false)
+
 const tabGroups = [
   {
     id: 'operations',
@@ -488,44 +509,59 @@ const tabGroups = [
   }
 ]
 
-const newDomain = ref('')
-
+// ==================== FORM STATE ====================
 const form = reactive({
+  // Business Info (from settings endpoint)
   settings: {
     businessName: '',
     businessEmail: '',
-    businessPhone: { countryCode: '', number: '' },
-    businessAddress: { street: '', city: '', region: '', postcode: '', country: '' },
+    businessPhone: { countryCode: '+234', number: '' },
+    businessAddress: { street: '', city: '', region: '', postcode: '', country: 'Nigeria' },
     defaultCurrency: 'NGN',
     timezone: 'Africa/Lagos',
-    paymentMethods: [],
-    taxes: [],
-    resources: [],
-    blockedTimeTypes: [],
-    serviceCharges: [],
-    closedPeriods: []
-  } as Partial<BusinessSettings>,
+    resources: [] as Resource[],
+    blockedTimeTypes: [] as BlockedTimeType[],
+    closedPeriods: [] as ClosedPeriod[]
+  },
+  
+  // Business Hours (from businessHours endpoint)
   businessHours: [] as BusinessHours[],
+  
+  // Appointment Settings (from appointmentSettings endpoint)
   appointmentSettings: {
     allowOnlineBooking: true,
     requireClientConfirmation: false,
     defaultAppointmentDuration: 30,
     bookingWindowHours: 2,
-    appointmentStatuses: [],
-    cancellationReasons: []
-  } as Record<string, any>,
+    appointmentStatuses: [] as AppointmentStatus[],
+    cancellationReasons: [] as CancellationReason[]
+  },
+  
+  // Payment Settings (from paymentSettings endpoint)
+  paymentSettings: {
+    paymentMethods: [] as PaymentMethod[],
+    serviceCharges: [] as ServiceCharge[],
+    taxes: [] as Tax[],
+    defaultCurrency: 'NGN'
+  },
+  
+  // Theme (from theme endpoint - nested under theme.theme)
   theme: {
-    primaryColor: '#000000',
-    fontFamily: 'Inter'
-  } as BusinessTheme,
+    primaryColor: '#3B82F6',
+    secondaryColor: '#10B981',
+    accentColor: '#F59E0B',
+    fontFamily: 'Inter, sans-serif'
+  },
+  
+  // Notification Preferences
   preferences: {} as NotificationPreferences
 })
 
+// ==================== DRAFT STATES FOR ADDING ITEMS ====================
 const appointmentStatusDraft = reactive<AppointmentStatus>({
   statusName: '',
   statusIcon: '',
-  statusColor: '#000000',
-  characterLimit: 0,
+  statusColor: '#3b82f6',
   isActive: true
 })
 
@@ -564,22 +600,10 @@ const closedPeriodDraft = reactive<ClosedPeriod>({
 })
 
 const serviceChargeDraft = reactive<ServiceCharge>({
-  basicInfo: {
-    name: '',
-    description: ''
-  },
-  settings: {
-    applyServiceChargeOn: 'All services',
-    automaticallyApplyDuringCheckout: false
-  },
-  rateType: {
-    type: 'Percentage',
-    percentage: 0
-  },
-  taxRate: {
-    tax: 'VAT',
-    rate: 0
-  },
+  basicInfo: { name: '', description: '' },
+  settings: { applyServiceChargeOn: 'All services', automaticallyApplyDuringCheckout: false },
+  rateType: { type: 'Percentage', percentage: 0 },
+  taxRate: { tax: 'VAT', rate: 0 },
   isActive: true
 })
 
@@ -595,10 +619,128 @@ const defaultHours: BusinessHours[] = [
   { day: 'Wednesday', startTime: '09:00', endTime: '17:00', isOpen: true },
   { day: 'Thursday', startTime: '09:00', endTime: '17:00', isOpen: true },
   { day: 'Friday', startTime: '09:00', endTime: '17:00', isOpen: true },
-  { day: 'Saturday', startTime: '10:00', endTime: '15:00', isOpen: true },
-  { day: 'Sunday', startTime: '10:00', endTime: '15:00', isOpen: false }
+  { day: 'Saturday', startTime: '10:00', endTime: '16:00', isOpen: true },
+  { day: 'Sunday', startTime: '00:00', endTime: '00:00', isOpen: false }
 ]
 
+// ==================== DATA MAPPING FUNCTIONS ====================
+
+/**
+ * Map settings data from backend to form
+ */
+const mapSettingsToForm = (data: any) => {
+  if (!data) return
+  
+  form.settings.businessName = data.businessName || ''
+  form.settings.businessEmail = data.businessEmail || ''
+  form.settings.businessPhone = {
+    countryCode: data.businessPhone?.countryCode || '+234',
+    number: data.businessPhone?.number || ''
+  }
+  form.settings.businessAddress = {
+    street: data.businessAddress?.street || '',
+    city: data.businessAddress?.city || '',
+    region: data.businessAddress?.region || '',
+    postcode: data.businessAddress?.postcode || '',
+    country: data.businessAddress?.country || 'Nigeria'
+  }
+  form.settings.defaultCurrency = data.defaultCurrency || 'NGN'
+  form.settings.timezone = data.timezone || 'Africa/Lagos'
+  form.settings.resources = data.resources || []
+  form.settings.blockedTimeTypes = data.blockedTimeTypes || []
+  form.settings.closedPeriods = data.closedPeriods || []
+}
+
+/**
+ * Map business hours from backend to form
+ */
+const mapBusinessHoursToForm = (data: any[]) => {
+  if (!data || !data.length) {
+    form.businessHours = [...defaultHours]
+    return
+  }
+  
+  form.businessHours = data.map(hour => ({
+    day: hour.day,
+    startTime: hour.startTime || '09:00',
+    endTime: hour.endTime || '17:00',
+    isOpen: hour.isOpen ?? true
+  }))
+}
+
+/**
+ * Map appointment settings from backend to form
+ */
+const mapAppointmentSettingsToForm = (data: any) => {
+  if (!data) return
+  
+  form.appointmentSettings.allowOnlineBooking = data.allowOnlineBooking ?? true
+  form.appointmentSettings.requireClientConfirmation = data.requireClientConfirmation ?? false
+  form.appointmentSettings.defaultAppointmentDuration = data.defaultAppointmentDuration || 30
+  form.appointmentSettings.bookingWindowHours = data.bookingWindowHours || 2
+  form.appointmentSettings.appointmentStatuses = (data.appointmentStatuses || []).map((s: any) => ({
+    statusName: s.statusName,
+    statusIcon: s.statusIcon,
+    statusColor: s.statusColor,
+    isActive: s.isActive ?? true
+  }))
+  form.appointmentSettings.cancellationReasons = (data.cancellationReasons || []).map((r: any) => ({
+    name: r.name,
+    reasonType: r.reasonType,
+    isActive: r.isActive ?? true
+  }))
+}
+
+/**
+ * Map payment settings from backend to form
+ */
+const mapPaymentSettingsToForm = (data: any) => {
+  if (!data) return
+  
+  form.paymentSettings.paymentMethods = (data.paymentMethods || []).map((m: any) => ({
+    name: m.name,
+    paymentType: m.paymentType,
+    enabled: m.enabled ?? true
+  }))
+  form.paymentSettings.serviceCharges = data.serviceCharges || []
+  form.paymentSettings.taxes = data.taxes || []
+  form.paymentSettings.defaultCurrency = data.defaultCurrency || 'NGN'
+}
+
+/**
+ * Map theme from backend to form
+ * Backend structure: { isDefault: boolean, theme: { colors: {...}, typography: {...}, ... } }
+ */
+const mapThemeToForm = (data: any) => {
+  if (!data) return
+  
+  // Handle nested theme structure
+  const themeData = data.theme || data
+  
+  form.theme.primaryColor = themeData.colors?.primary || '#3B82F6'
+  form.theme.secondaryColor = themeData.colors?.secondary || '#10B981'
+  form.theme.accentColor = themeData.colors?.accent || '#F59E0B'
+  form.theme.fontFamily = themeData.typography?.fontFamily || 'Inter, sans-serif'
+}
+
+/**
+ * Map domains from backend
+ * Backend: { id, domain, subdomain, verificationStatus, sslStatus, isActive, verifiedAt, createdAt }
+ */
+const mapDomains = computed(() => {
+  return domains.value.map((d: any) => ({
+    id: d.id || d._id,
+    domain: d.domain,
+    subdomain: d.subdomain,
+    status: d.verificationStatus || d.status || 'pending',
+    sslStatus: d.sslStatus || 'unknown',
+    isActive: d.isActive ?? false,
+    verifiedAt: d.verifiedAt,
+    createdAt: d.createdAt
+  }))
+})
+
+// ==================== INITIALIZATION ====================
 onMounted(async () => {
   await Promise.all([
     fetchSettings(),
@@ -610,130 +752,168 @@ onMounted(async () => {
     fetchDomains()
   ])
 
-  if (settings.value) {
-    form.settings = {
-      ...form.settings,
-      ...settings.value,
-      businessPhone: settings.value.businessPhone || form.settings.businessPhone,
-      businessAddress: settings.value.businessAddress || form.settings.businessAddress,
-      paymentMethods: settings.value.paymentMethods || [],
-      taxes: settings.value.taxes || [],
-      resources: settings.value.resources || [],
-      blockedTimeTypes: settings.value.blockedTimeTypes || [],
-      serviceCharges: settings.value.serviceCharges || [],
-      closedPeriods: settings.value.closedPeriods || []
-    }
-  }
-
-  form.businessHours = businessHours.value?.length ? businessHours.value : (settings.value?.businessHours || defaultHours)
-
-  if (appointmentSettings.value) {
-    form.appointmentSettings = { ...form.appointmentSettings, ...appointmentSettings.value }
-  } else if (settings.value) {
-    form.appointmentSettings = {
-      allowOnlineBooking: settings.value.allowOnlineBooking,
-      requireClientConfirmation: settings.value.requireClientConfirmation,
-      defaultAppointmentDuration: settings.value.defaultAppointmentDuration,
-      bookingWindowHours: settings.value.bookingWindowHours,
-      appointmentStatuses: settings.value.appointmentStatuses || [],
-      cancellationReasons: settings.value.cancellationReasons || []
-    }
-  }
-
-  if (paymentSettings.value) {
-    form.settings.paymentMethods = paymentSettings.value.paymentMethods || form.settings.paymentMethods
-    form.settings.taxes = paymentSettings.value.taxes || form.settings.taxes
-  }
-
-  if (theme.value) {
-    form.theme = { ...form.theme, ...theme.value }
-  }
-
+  // Map all data to form
+  mapSettingsToForm(settings.value)
+  mapBusinessHoursToForm(businessHours.value)
+  mapAppointmentSettingsToForm(appointmentSettings.value)
+  mapPaymentSettingsToForm(paymentSettings.value)
+  mapThemeToForm(theme.value)
+  
   if (preferences.value) {
     form.preferences = { ...preferences.value }
   }
 })
 
+// ==================== SAVE FUNCTIONS ====================
 const saveGeneral = async () => {
+  saving.value = true
   try {
-    await updateSettings(form.settings)
-    alert('Settings saved')
+    await updateSettings({
+      businessName: form.settings.businessName,
+      businessEmail: form.settings.businessEmail,
+      businessPhone: form.settings.businessPhone,
+      businessAddress: form.settings.businessAddress,
+      defaultCurrency: form.settings.defaultCurrency,
+      timezone: form.settings.timezone
+    })
+    alert('Settings saved successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to save settings')
+  } finally {
+    saving.value = false
   }
 }
 
 const saveBusinessHours = async () => {
+  saving.value = true
   try {
     await updateBusinessHours(form.businessHours)
-    alert('Business hours updated')
+    alert('Business hours updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update business hours')
+  } finally {
+    saving.value = false
   }
 }
 
 const saveAppointments = async () => {
+  saving.value = true
   try {
-    await updateAppointmentSettings(form.appointmentSettings)
-    alert('Appointment settings updated')
+    await updateAppointmentSettings({
+      allowOnlineBooking: form.appointmentSettings.allowOnlineBooking,
+      requireClientConfirmation: form.appointmentSettings.requireClientConfirmation,
+      defaultAppointmentDuration: form.appointmentSettings.defaultAppointmentDuration,
+      bookingWindowHours: form.appointmentSettings.bookingWindowHours,
+      appointmentStatuses: form.appointmentSettings.appointmentStatuses,
+      cancellationReasons: form.appointmentSettings.cancellationReasons
+    })
+    alert('Appointment settings updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update appointment settings')
+  } finally {
+    saving.value = false
   }
 }
 
 const savePayments = async () => {
+  saving.value = true
   try {
     await updateSettings({
-      paymentMethods: form.settings.paymentMethods,
-      taxes: form.settings.taxes
+      paymentMethods: form.paymentSettings.paymentMethods,
+      taxes: form.paymentSettings.taxes
     })
-    alert('Payment settings updated')
+    alert('Payment settings updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update payment settings')
+  } finally {
+    saving.value = false
   }
 }
 
 const saveServiceCharges = async () => {
+  saving.value = true
   try {
     await updateSettings({
-      serviceCharges: form.settings.serviceCharges
+      serviceCharges: form.paymentSettings.serviceCharges
     })
-    alert('Service charges updated')
+    alert('Service charges updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update service charges')
+  } finally {
+    saving.value = false
   }
 }
 
 const saveResourcesAndBlockedTimes = async () => {
+  saving.value = true
   try {
     await updateSettings({
       resources: form.settings.resources,
       blockedTimeTypes: form.settings.blockedTimeTypes
     })
-    alert('Resource settings updated')
+    alert('Resource settings updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update resource settings')
+  } finally {
+    saving.value = false
   }
 }
 
 const saveClosedPeriods = async () => {
+  saving.value = true
   try {
     await updateSettings({
       closedPeriods: form.settings.closedPeriods
     })
-    alert('Closed periods updated')
+    alert('Closed periods updated successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to update closed periods')
+  } finally {
+    saving.value = false
   }
 }
 
+const saveBranding = async () => {
+  saving.value = true
+  try {
+    // Map form theme back to backend structure
+    await updateTheme({
+      colors: {
+        primary: form.theme.primaryColor,
+        secondary: form.theme.secondaryColor,
+        accent: form.theme.accentColor
+      },
+      typography: {
+        fontFamily: form.theme.fontFamily
+      }
+    } as any)
+    alert('Branding updated successfully')
+  } catch (e: any) {
+    alert(e.message || 'Failed to update branding')
+  } finally {
+    saving.value = false
+  }
+}
+
+const saveNotifications = async () => {
+  saving.value = true
+  try {
+    await updateNotificationPreferences(form.preferences)
+    alert('Preferences saved successfully')
+  } catch (e: any) {
+    alert(e.message || 'Failed to save preferences')
+  } finally {
+    saving.value = false
+  }
+}
+
+// ==================== ADD/REMOVE FUNCTIONS ====================
 const addAppointmentStatus = () => {
   if (!appointmentStatusDraft.statusName) return
   form.appointmentSettings.appointmentStatuses.push({ ...appointmentStatusDraft })
   appointmentStatusDraft.statusName = ''
   appointmentStatusDraft.statusIcon = ''
-  appointmentStatusDraft.statusColor = '#000000'
-  appointmentStatusDraft.characterLimit = 0
+  appointmentStatusDraft.statusColor = '#3b82f6'
 }
 
 const removeAppointmentStatus = (index: number) => {
@@ -753,31 +933,31 @@ const removeCancellationReason = (index: number) => {
 
 const addPaymentMethod = () => {
   if (!paymentMethodDraft.name) return
-  form.settings.paymentMethods?.push({ ...paymentMethodDraft })
+  form.paymentSettings.paymentMethods.push({ ...paymentMethodDraft })
   paymentMethodDraft.name = ''
   paymentMethodDraft.paymentType = 'cash'
   paymentMethodDraft.enabled = true
 }
 
 const removePaymentMethod = (index: number) => {
-  form.settings.paymentMethods?.splice(index, 1)
+  form.paymentSettings.paymentMethods.splice(index, 1)
 }
 
 const addResource = () => {
   if (!resourceDraft.name || !resourceDraft.description) return
-  form.settings.resources?.push({ ...resourceDraft })
+  form.settings.resources.push({ ...resourceDraft })
   resourceDraft.name = ''
   resourceDraft.description = ''
   resourceDraft.isActive = true
 }
 
 const removeResource = (index: number) => {
-  form.settings.resources?.splice(index, 1)
+  form.settings.resources.splice(index, 1)
 }
 
 const addBlockedTimeType = () => {
   if (!blockedTimeDraft.type || !blockedTimeDraft.duration) return
-  form.settings.blockedTimeTypes?.push({ ...blockedTimeDraft })
+  form.settings.blockedTimeTypes.push({ ...blockedTimeDraft })
   blockedTimeDraft.type = ''
   blockedTimeDraft.typeIcon = ''
   blockedTimeDraft.duration = ''
@@ -786,17 +966,17 @@ const addBlockedTimeType = () => {
 }
 
 const removeBlockedTimeType = (index: number) => {
-  form.settings.blockedTimeTypes?.splice(index, 1)
+  form.settings.blockedTimeTypes.splice(index, 1)
 }
 
 const addServiceCharge = () => {
   if (!serviceChargeDraft.basicInfo.name) return
-  form.settings.serviceCharges?.push({
+  form.paymentSettings.serviceCharges.push({
     ...serviceChargeDraft,
-    rateType: { ...serviceChargeDraft.rateType },
-    taxRate: { ...serviceChargeDraft.taxRate },
     basicInfo: { ...serviceChargeDraft.basicInfo },
-    settings: { ...serviceChargeDraft.settings }
+    settings: { ...serviceChargeDraft.settings },
+    rateType: { ...serviceChargeDraft.rateType },
+    taxRate: { ...serviceChargeDraft.taxRate }
   })
   serviceChargeDraft.basicInfo.name = ''
   serviceChargeDraft.basicInfo.description = ''
@@ -807,24 +987,24 @@ const addServiceCharge = () => {
 }
 
 const removeServiceCharge = (index: number) => {
-  form.settings.serviceCharges?.splice(index, 1)
+  form.paymentSettings.serviceCharges.splice(index, 1)
 }
 
 const addTax = () => {
   if (!taxDraft.taxName) return
-  form.settings.taxes?.push({ ...taxDraft })
+  form.paymentSettings.taxes.push({ ...taxDraft })
   taxDraft.taxName = ''
   taxDraft.taxRate = 0
   taxDraft.isActive = true
 }
 
 const removeTax = (index: number) => {
-  form.settings.taxes?.splice(index, 1)
+  form.paymentSettings.taxes.splice(index, 1)
 }
 
 const addClosedPeriod = () => {
   if (!closedPeriodDraft.startDate || !closedPeriodDraft.endDate || !closedPeriodDraft.description) return
-  form.settings.closedPeriods?.push({ ...closedPeriodDraft })
+  form.settings.closedPeriods.push({ ...closedPeriodDraft })
   closedPeriodDraft.startDate = ''
   closedPeriodDraft.endDate = ''
   closedPeriodDraft.description = ''
@@ -833,35 +1013,20 @@ const addClosedPeriod = () => {
 }
 
 const removeClosedPeriod = (index: number) => {
-  form.settings.closedPeriods?.splice(index, 1)
-}
-
-const saveBranding = async () => {
-  try {
-    await updateTheme(form.theme)
-    alert('Branding updated')
-  } catch (e: any) {
-    alert(e.message || 'Failed to update branding')
-  }
-}
-
-const saveNotifications = async () => {
-  try {
-    await updateNotificationPreferences(form.preferences)
-    alert('Preferences saved')
-  } catch (e: any) {
-    alert(e.message || 'Failed to save preferences')
-  }
+  form.settings.closedPeriods.splice(index, 1)
 }
 
 const addDomain = async () => {
   if (!newDomain.value) return
+  saving.value = true
   try {
     await requestDomain(newDomain.value)
     newDomain.value = ''
-    alert('Domain requested')
+    alert('Domain requested successfully')
   } catch (e: any) {
     alert(e.message || 'Failed to request domain')
+  } finally {
+    saving.value = false
   }
 }
 </script>

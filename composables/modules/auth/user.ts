@@ -310,6 +310,119 @@ export const useUser = () => {
     // and then call updateBusiness() with the complete data
   };
 
+  /**
+   * Update current business context with new business data
+   * Called after switching business via API
+   */
+  const updateCurrentBusiness = (newBusiness: Business, businessId: string) => {
+    // Update the current business
+    runtimeData.business.value = newBusiness;
+    saveToLocalStorage("business", newBusiness);
+
+    // Update the user's current business ID
+    if (runtimeData.user.value) {
+      updateUser({ currentBusinessId: businessId });
+    }
+
+    // Update isCurrent flag in businesses list
+    if (runtimeData.businesses.value.length > 0) {
+      runtimeData.businesses.value = runtimeData.businesses.value.map(b => ({
+        ...b,
+        isCurrent: b.id === businessId
+      })) as BusinessSummary[];
+      saveToLocalStorage("businesses", runtimeData.businesses.value);
+    }
+
+    console.log("Current business updated:", newBusiness.businessName);
+  };
+
+  /**
+   * Add a new business to the businesses list
+   * Called after adding a new business via API
+   */
+  const addBusinessToList = (business: BusinessSummary) => {
+    // Check if already exists
+    const exists = runtimeData.businesses.value.some(b => b.id === business.id);
+    
+    if (!exists) {
+      runtimeData.businesses.value = [...runtimeData.businesses.value, business];
+      saveToLocalStorage("businesses", runtimeData.businesses.value);
+      console.log("Business added to list:", business.businessName);
+    }
+
+    // Also add to user's owned businesses
+    if (runtimeData.user.value) {
+      const ownedBusinesses = runtimeData.user.value.ownedBusinesses || [];
+      if (!ownedBusinesses.includes(business.id)) {
+        updateUser({ 
+          ownedBusinesses: [...ownedBusinesses, business.id] 
+        });
+      }
+    }
+  };
+
+  /**
+   * Update the full businesses list
+   * Called after fetching all user businesses
+   */
+  const updateBusinessesList = (businesses: BusinessSummary[]) => {
+    runtimeData.businesses.value = businesses;
+    saveToLocalStorage("businesses", businesses);
+    console.log("Businesses list updated:", businesses.length, "businesses");
+  };
+
+  /**
+   * Clear current business context (switch to client mode)
+   */
+  const clearCurrentBusiness = () => {
+    runtimeData.business.value = null;
+    saveToLocalStorage("business", null);
+
+    if (runtimeData.user.value) {
+      updateUser({ currentBusinessId: undefined });
+    }
+
+    // Update isCurrent flag in all businesses
+    if (runtimeData.businesses.value.length > 0) {
+      runtimeData.businesses.value = runtimeData.businesses.value.map(b => ({
+        ...b,
+        isCurrent: false
+      })) as BusinessSummary[];
+      saveToLocalStorage("businesses", runtimeData.businesses.value);
+    }
+
+    console.log("Business context cleared");
+  };
+
+  /**
+   * Remove a business from the list (e.g., after deletion)
+   */
+  const removeBusinessFromList = (businessId: string) => {
+    runtimeData.businesses.value = runtimeData.businesses.value.filter(
+      b => b.id !== businessId
+    );
+    saveToLocalStorage("businesses", runtimeData.businesses.value);
+
+    // If the removed business was the current one, clear it
+    if (runtimeData.business.value?.id === businessId) {
+      clearCurrentBusiness();
+    }
+
+    // Remove from user's owned/admin businesses
+    if (runtimeData.user.value) {
+      updateUser({
+        ownedBusinesses: (runtimeData.user.value.ownedBusinesses || []).filter(
+          id => id !== businessId
+        ),
+        adminBusinesses: (runtimeData.user.value.adminBusinesses || []).filter(
+          id => id !== businessId
+        )
+      });
+    }
+
+    console.log("Business removed from list:", businessId);
+  };
+
   const getToken = () => runtimeData.token.value;
   const getRefreshToken = () => runtimeData.refreshToken.value;
 
@@ -355,6 +468,11 @@ export const useUser = () => {
     updateUser,
     updateBusiness,
     switchBusiness,
+    updateCurrentBusiness,
+    addBusinessToList,
+    updateBusinessesList,
+    clearCurrentBusiness,
+    removeBusinessFromList,
     logOut,
     setToken,
     setRefreshToken,

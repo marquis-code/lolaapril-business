@@ -11,7 +11,8 @@ export const useGetTheme = () => {
     error.value = null
     try {
       const response = await branding_api.getTheme()
-      data.value = response.data?.data || response.data
+      console.log('Fetched theme response:', response)
+      data.value = response.data
       return data.value
     } catch (e: any) {
       error.value = e.message

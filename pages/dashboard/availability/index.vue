@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-white">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -36,10 +36,10 @@
 
       <!-- Quick Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl border border-gray-100 p-5">
+        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -49,10 +49,10 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-100 p-5">
+        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -62,10 +62,10 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-100 p-5">
+        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -75,10 +75,10 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-100 p-5">
+        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-[#005967]/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-[#005967]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
@@ -118,19 +118,19 @@
             <!-- Legend -->
             <div class="flex flex-wrap items-center gap-4 mb-6 pb-4 border-b border-gray-100">
               <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded bg-green-500"></div>
-                <span class="text-xs text-gray-600">High Availability (>75%)</span>
+                <div class="w-4 h-4 rounded bg-[#005967]"></div>
+                <span class="text-xs text-gray-600">High (>75%)</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded bg-yellow-500"></div>
+                <div class="w-4 h-4 rounded bg-[#005967]/70"></div>
                 <span class="text-xs text-gray-600">Medium (50-75%)</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded bg-orange-500"></div>
+                <div class="w-4 h-4 rounded bg-[#005967]/40"></div>
                 <span class="text-xs text-gray-600">Low (25-50%)</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded bg-red-500"></div>
+                <div class="w-4 h-4 rounded bg-[#005967]/20"></div>
                 <span class="text-xs text-gray-600">Almost Full (&lt;25%)</span>
               </div>
               <div class="flex items-center gap-2">
@@ -166,10 +166,10 @@
                   class="aspect-square rounded-xl cursor-pointer transition-all hover:scale-105 hover:shadow-lg flex flex-col items-center justify-center p-1 relative group"
                   :class="getSlotColorClass(slot)"
                 >
-                  <span class="text-sm font-semibold" :class="slot.availableSlotCount === 0 ? 'text-gray-400' : 'text-white'">
+                  <span class="text-sm font-semibold" :class="getSlotTextClass(slot)">
                     {{ getDayNumber(slot.date) }}
                   </span>
-                  <span class="text-[10px] mt-0.5" :class="slot.availableSlotCount === 0 ? 'text-gray-400' : 'text-white/80'">
+                  <span class="text-[10px] mt-0.5" :class="getSlotSubTextClass(slot)">
                     {{ slot.availableSlotCount }}/{{ slot.totalSlots }}
                   </span>
                   
@@ -208,21 +208,21 @@
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="bg-green-50 rounded-xl p-4 text-center">
-                <p class="text-2xl font-bold text-green-700">{{ selectedSlot.availableSlotCount }}</p>
-                <p class="text-xs text-green-600 mt-1">Available Slots</p>
+              <div class="bg-[#005967]/5 rounded-xl p-4 text-center border border-[#005967]/10">
+                <p class="text-2xl font-bold text-[#005967]">{{ selectedSlot.availableSlotCount }}</p>
+                <p class="text-xs text-gray-600 mt-1">Available Slots</p>
               </div>
-              <div class="bg-blue-50 rounded-xl p-4 text-center">
-                <p class="text-2xl font-bold text-blue-700">{{ selectedSlot.totalSlots }}</p>
-                <p class="text-xs text-blue-600 mt-1">Total Slots</p>
+              <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p class="text-2xl font-bold text-gray-900">{{ selectedSlot.totalSlots }}</p>
+                <p class="text-xs text-gray-600 mt-1">Total Slots</p>
               </div>
-              <div class="bg-orange-50 rounded-xl p-4 text-center">
-                <p class="text-2xl font-bold text-orange-700">{{ selectedSlot.takenSlotCount }}</p>
-                <p class="text-xs text-orange-600 mt-1">Booked Slots</p>
+              <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p class="text-2xl font-bold text-gray-900">{{ selectedSlot.takenSlotCount }}</p>
+                <p class="text-xs text-gray-600 mt-1">Booked Slots</p>
               </div>
-              <div class="bg-purple-50 rounded-xl p-4 text-center">
-                <p class="text-2xl font-bold text-purple-700">{{ getAvailabilityPercentage(selectedSlot) }}%</p>
-                <p class="text-xs text-purple-600 mt-1">Available</p>
+              <div class="bg-[#005967]/5 rounded-xl p-4 text-center border border-[#005967]/10">
+                <p class="text-2xl font-bold text-[#005967]">{{ getAvailabilityPercentage(selectedSlot) }}%</p>
+                <p class="text-xs text-gray-600 mt-1">Available</p>
               </div>
             </div>
 
@@ -251,7 +251,7 @@
               <h3 class="font-semibold text-gray-900">Business Hours</h3>
               <button
                 @click="showBusinessHoursModal = true"
-                class="text-sm text-blue-600 hover:text-blue-700"
+                class="text-sm text-[#005967] hover:text-[#004450]"
               >
                 Edit
               </button>
@@ -262,12 +262,12 @@
                 v-for="day in businessHoursSchedule"
                 :key="day.day"
                 class="flex items-center justify-between py-2 px-3 rounded-lg"
-                :class="day.isOpen ? 'bg-green-50' : 'bg-gray-50'"
+                :class="day.isOpen ? 'bg-[#005967]/5' : 'bg-gray-50'"
               >
-                <span class="text-sm font-medium" :class="day.isOpen ? 'text-green-700' : 'text-gray-400'">
+                <span class="text-sm font-medium" :class="day.isOpen ? 'text-[#005967]' : 'text-gray-400'">
                   {{ capitalize(day.day).slice(0, 3) }}
                 </span>
-                <span v-if="day.isOpen" class="text-xs text-green-600">
+                <span v-if="day.isOpen" class="text-xs text-[#005967]">
                   {{ formatTime(day.openTime) }} - {{ formatTime(day.closeTime) }}
                 </span>
                 <span v-else class="text-xs text-gray-400">Closed</span>
@@ -280,7 +280,7 @@
               <p class="text-sm text-gray-500">No hours set</p>
               <button
                 @click="showBusinessHoursModal = true"
-                class="mt-3 text-sm text-blue-600 hover:text-blue-700"
+                class="mt-3 text-sm text-[#005967] hover:text-[#004450]"
               >
                 Configure now
               </button>
@@ -294,10 +294,10 @@
             <div class="space-y-3">
               <button
                 @click="showBlockTimeModal = true"
-                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#005967]/5 transition-colors text-left group"
               >
-                <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-lg bg-gray-200 group-hover:bg-[#005967]/10 flex items-center justify-center transition-colors">
+                  <svg class="w-5 h-5 text-gray-600 group-hover:text-[#005967] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                   </svg>
                 </div>
@@ -309,10 +309,10 @@
 
               <button
                 @click="showExtendModal = true"
-                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#005967]/5 transition-colors text-left group"
               >
-                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-lg bg-gray-200 group-hover:bg-[#005967]/10 flex items-center justify-center transition-colors">
+                  <svg class="w-5 h-5 text-gray-600 group-hover:text-[#005967] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </div>
@@ -324,10 +324,10 @@
 
               <button
                 @click="showInitializeModal = true"
-                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#005967]/5 transition-colors text-left group"
               >
-                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-lg bg-gray-200 group-hover:bg-[#005967]/10 flex items-center justify-center transition-colors">
+                  <svg class="w-5 h-5 text-gray-600 group-hover:text-[#005967] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </div>
@@ -731,18 +731,33 @@ const getAvailabilityPercentage = (slot: SlotData) => {
 const getSlotColorClass = (slot: SlotData) => {
   const percentage = getAvailabilityPercentage(slot)
   if (slot.availableSlotCount === 0) return 'bg-gray-200'
-  if (percentage >= 75) return 'bg-green-500'
-  if (percentage >= 50) return 'bg-yellow-500'
-  if (percentage >= 25) return 'bg-orange-500'
-  return 'bg-red-500'
+  if (percentage >= 75) return 'bg-[#005967]'
+  if (percentage >= 50) return 'bg-[#005967]/70'
+  if (percentage >= 25) return 'bg-[#005967]/40'
+  return 'bg-[#005967]/20'
+}
+
+// Text color based on background opacity for readability
+const getSlotTextClass = (slot: SlotData) => {
+  const percentage = getAvailabilityPercentage(slot)
+  if (slot.availableSlotCount === 0) return 'text-gray-500'
+  if (percentage >= 50) return 'text-white'
+  return 'text-[#005967]'
+}
+
+const getSlotSubTextClass = (slot: SlotData) => {
+  const percentage = getAvailabilityPercentage(slot)
+  if (slot.availableSlotCount === 0) return 'text-gray-400'
+  if (percentage >= 50) return 'text-white/80'
+  return 'text-[#005967]/70'
 }
 
 const getUtilizationBarColor = (slot: SlotData) => {
   const utilization = 100 - getAvailabilityPercentage(slot)
-  if (utilization >= 75) return 'bg-red-500'
-  if (utilization >= 50) return 'bg-orange-500'
-  if (utilization >= 25) return 'bg-yellow-500'
-  return 'bg-green-500'
+  if (utilization >= 75) return 'bg-[#005967]'
+  if (utilization >= 50) return 'bg-[#005967]/70'
+  if (utilization >= 25) return 'bg-[#005967]/40'
+  return 'bg-[#005967]/20'
 }
 
 const selectDate = (slot: SlotData) => {
