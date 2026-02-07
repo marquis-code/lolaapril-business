@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { business_api } from '~/api_factory/modules'
+import { business_api } from '@/api_factory/modules/business.api'
 
 export const useVerifyKyc = () => {
     const loading = ref(false)
