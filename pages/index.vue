@@ -931,8 +931,10 @@
       </section>
 
       <!-- Pricing Section -->
-      <section id="pricing" class="py-20 lg:py-28 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PricingSection />
+        <!-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center max-w-3xl mx-auto mb-16">
             <span class="inline-block text-primary font-semibold text-sm tracking-wide uppercase mb-4">Pricing</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -977,7 +979,7 @@
               </NuxtLink>
             </div>
           </div>
-        </div>
+        </div> -->
       </section>
 
       <!-- FAQ Section -->

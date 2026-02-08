@@ -23,5 +23,9 @@ export const useFetchPricingTiers = () => {
     }
   }
 
+  onMounted(() => {
+    execute()
+  })
+
   return { data, loading, error, execute }
 }
