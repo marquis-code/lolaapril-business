@@ -29,6 +29,8 @@
       </div>
     </div>
 
+    {{ teamMembers }}
+
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <UiAnimatedInput v-model="filters.search" type="text" label="Search" placeholder="Name or email" />
@@ -67,19 +69,42 @@
       <div class="divide-y divide-gray-50">
         <div v-for="member in teamMembers" :key="member._id" class="grid grid-cols-1 md:grid-cols-6 gap-4 px-6 py-4">
           <div>
-            <div class="font-medium text-gray-900">{{ member.firstName }} {{ member.lastName }}</div>
+            <div class="font-medium text-gray-900 flex items-center gap-2">
+              <img v-if="member.profileImage" :src="member.profileImage" alt="Profile" class="w-8 h-8 rounded-full object-cover border border-gray-200" />
+              <span>{{ member.firstName }} {{ member.lastName }}</span>
+            </div>
             <div class="text-xs text-gray-500">{{ member.email }}</div>
+            <div class="text-xs text-gray-400 mt-1" v-if="member.phone">{{ member.phone.countryCode }} {{ member.phone.number }}</div>
           </div>
-          <div class="text-sm text-gray-600 capitalize">{{ member.role }}</div>
-          <div class="text-sm text-gray-600">{{ member.department || '—' }}</div>
+          <div class="text-sm text-gray-600 capitalize">
+            {{ member.role }}
+            <div v-if="member.skills?.experienceLevel" class="text-xs text-gray-400">{{ member.skills.experienceLevel }}</div>
+            <div v-if="member.skills?.specializations?.length" class="flex flex-wrap gap-1 mt-1">
+              <span v-for="(spec, i) in member.skills.specializations" :key="i" class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs">{{ spec }}</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600">
+            {{ member.department || '—' }}
+            <div v-if="member.workingHours && member.workingHours.length" class="text-xs text-gray-400 mt-1">
+              <span v-for="(wh, i) in member.workingHours.filter(h => h.isWorking)" :key="i">
+                {{ wh.day }}<span v-if="i < member.workingHours.filter(h => h.isWorking).length - 1">, </span>
+              </span>
+            </div>
+          </div>
           <div>
             <span class="px-2 py-1 rounded-full text-xs font-medium capitalize"
               :class="member.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'">
               {{ member.isActive ? 'active' : 'inactive' }}
             </span>
+            <div v-if="member.canBookOnline === false" class="text-xs text-red-500 mt-1">Cannot book online</div>
           </div>
-          <div class="text-sm text-gray-600 capitalize">{{ member.employmentType?.replace('_', ' ') }}</div>
-          <div class="flex items-center gap-2">
+          <div class="text-sm text-gray-600 capitalize">
+            {{ member.employmentType?.replace('_', ' ') }}
+            <div v-if="member.hireDate" class="text-xs text-gray-400">Hired: {{ member.hireDate }}</div>
+            <div v-if="member.salary" class="text-xs text-gray-400">₦{{ member.salary.toLocaleString() }}</div>
+          </div>
+          <div class="flex flex-col gap-1 md:flex-row md:items-center md:gap-2">
+            <button @click="openViewModal(member)" class="text-xs font-medium text-blue-600 hover:underline">View</button>
             <button @click="openEditModal(member)" class="text-xs font-medium text-gray-600 hover:text-black">Edit</button>
             <button @click="openStatusModal(member)" class="text-xs font-medium text-gray-600 hover:text-black">Status</button>
             <button @click="handleDelete(member._id)" class="text-xs font-medium text-red-600">Delete</button>
@@ -534,10 +559,12 @@
       </div>
     </div>
   </div>
+  <TeamMemberViewModal :show="showViewModal" :member="viewMember" @close="closeViewModal" />
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref, onMounted } from 'vue'
+import TeamMemberViewModal from '@/components/team/TeamMemberViewModal.vue'
 import type { Commission, CreateTeamMemberDto, TeamMember, TeamMemberQuery, TeamStats, WorkingHours } from '~/types/team'
 import { useFetchTeamMembers } from '@/composables/modules/team/useFetchTeamMembers'
 import { useCreateTeamMember } from '@/composables/modules/team/useCreateTeamMember'
@@ -564,6 +591,19 @@ const { services, loading: servicesLoading, fetchServices } = useService()
 const currentStep = ref(1)
 const totalSteps = 5
 const submitting = ref(false)
+
+const showViewModal = ref(false)
+const viewMember = ref<TeamMember | null>(null)
+
+function openViewModal(member: TeamMember) {
+  viewMember.value = member
+  showViewModal.value = true
+}
+
+function closeViewModal() {
+  showViewModal.value = false
+  viewMember.value = null
+}
 
 // Options
 const roleFilterOptions = [

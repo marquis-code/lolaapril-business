@@ -16,7 +16,7 @@ body {
 <script setup lang="ts">
 // Global app configuration
 useHead({
-  title: 'Lola April Wellness Spa - Outside Health Starts Inside',
+  title: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
   htmlAttrs: {
     lang: 'en'
   },
@@ -36,19 +36,18 @@ useHead({
 })
 
 useSeoMeta({
-  title: 'Lola April Wellness Spa — Outside Health Starts Inside',
-  ogTitle: 'Lola April Wellness Spa — Outside Health Starts Inside',
-  description: 'Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.',
-  ogDescription: 'Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.',
-  keywords: 'wellness spa Lagos, spa BnB Nigeria, holistic rejuvenation, luxury spa treatments, 24/7 spa services, Lekki spa, Lagos wellness center',
-  author: 'Lola April Wellness Spa',
+  title: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
+  ogTitle: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
+  description: 'Stop losing clients to no-shows and chaos. LolaApril helps salons, spas, and wellness businesses manage bookings, teams, finances, and multi-location operations from one intelligent dashboard. Trusted by 500+ businesses across Nigeria.',
+  ogDescription: 'Manage bookings, teams, finances, and multi-location operations for your salon, spa, or wellness business. Reduce no-shows by 32% and save 4 hours daily.',
+  keywords: 'salon management software, spa booking system, wellness business platform, appointment scheduling, staff management, salon POS, multi-location management, Nigeria salon software, beauty business management, no-show reduction, KYC verification, automated reminders, Lagos salon software',
+  author: 'LolaApril',
   ogType: 'website',
-  ogUrl: 'https://lolaaprilwellnessspa.com',
-  ogImage: 'https://lolaaprilwellnessspa.com/og-image.jpg',
+  ogUrl: 'https://lolaapril.com',
+  ogImage: 'https://lolaapril.com/og-image.jpg',
   twitterCard: 'summary_large_image',
-  // twitterUrl: 'https://lolaaprilwellnessspa.com',
-  twitterTitle: 'Lola April Wellness Spa — Outside Health Starts Inside',
-  twitterDescription: 'Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.',
-  twitterImage: 'https://lolaaprilwellnessspa.com/og-image.jpg'
+  twitterTitle: 'LolaApril Business Suite - Stop Losing Clients to No-Shows',
+  twitterDescription: 'All-in-one platform for salons, spas, and wellness businesses. Manage bookings, teams, and finances with automated reminders and real-time analytics. Trusted by 500+ businesses.',
+  twitterImage: 'https://lolaapril.com/og-image.jpg'
 })
 </script>

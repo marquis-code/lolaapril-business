@@ -3,7 +3,7 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   ssr: false,
 
-    devServer: {
+  devServer: {
     port: 3002,
     host: 'localhost' // or '0.0.0.0' to allow external access
   },
@@ -16,58 +16,30 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
   app: {
     head: {
-       title: 'Lola April Wellness Spa - Outside Health Starts Inside',
+      title: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
       htmlAttrs: { lang: "en" },
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "format-detection", content: "telephone=no" },
-
-        // ✅ SEO meta
-        {
-          name: "description",
-            content: 'Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.' 
-        },
-        {
-          name: "keywords",
-           content: 'Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.' 
-        },
-        { name: "author", content: "Lola April Wellness Spa" },
-
-        // ✅ Open Graph (for social previews)
-        { property: "og:title", content: "Lola April Wellness Spa — Outside Health Starts Inside" },
-        {
-          property: "og:description",
-          content:
-            "Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.",
-        },
+        { name: "description", content: "Stop losing clients to no-shows and chaos. LolaApril helps salons, spas, and wellness businesses manage bookings, teams, finances, and multi-location operations from one intelligent dashboard." },
+        { name: "keywords", content: "salon management software, spa booking system, wellness business platform, appointment scheduling, staff management, salon POS, multi-location management, Nigeria salon software, beauty business management" },
+        { property: "og:title", content: "LolaApril Business Suite - All-in-One Salon & Spa Management Platform" },
+        { property: "og:description", content: "Manage bookings, teams, finances, and multi-location operations for your salon, spa, or wellness business. Trusted by 500+ businesses across Nigeria." },
+        { property: "og:image", content: "/img/og-image.jpg" },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "https://lolaaprilwellnessspa.com" },
-        { property: "og:image", content: "https://lolaaprilwellnessspa.com/og-image.jpg" },
-
-        // ✅ Twitter meta
         { name: "twitter:card", content: "summary_large_image" },
-        { property: "twitter:url", content: "https://lolaaprilwellnessspa.com" },
-        { name: "twitter:title", content: "Lola April Wellness Spa — Outside Health Starts Inside" },
-        {
-          name: "twitter:description",
-          content:
-            "Premier destination for holistic rejuvenation. Bespoke wellness experiences with 24/7 spa services in Lagos, Nigeria.",
-        },
-        { name: "twitter:image", content: "https://lolaaprilwellnessspa.com/og-image.jpg" },
+        { name: "twitter:title", content: "LolaApril Business Suite - All-in-One Salon & Spa Management Platform" },
+        { name: "twitter:description", content: "Stop losing clients to no-shows. Manage your salon, spa, or wellness business with LolaApril's intelligent booking and management platform." },
+        { name: "twitter:image", content: "/img/og-image.jpg" },
       ],
-
       link: [
-        { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-        { rel: "shortcut icon", href: "/favicon.ico", type: "image/x-icon" },
-        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
-        { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96x96.png" },
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         { rel: "manifest", href: "/site.webmanifest" }
       ],
-
       script: [
         {
           src: "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js",
@@ -87,6 +59,43 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxtjs/google-fonts",
     "@nuxtjs/robots",
+    "@nuxtjs/sitemap",
+    "@nuxtjs/seo",
   ],
+
+  sitemap: {
+    hostname: 'https://lolaapril.com',
+    gzip: true,
+    routes: [
+      '/',
+      '/auth/login',
+      '/auth/register',
+      '/features',
+      '/pricing',
+      '/about',
+      '/contact',
+    ],
+  },
+
+  robots: {
+    UserAgent: '*',
+    Allow: '/',
+    Disallow: ['/dashboard', '/admin'],
+    Sitemap: 'https://lolaapril.com/sitemap.xml',
+  },
+
+  seo: {
+    enabled: true,
+    meta: {
+      title: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
+      description: 'Stop losing clients to no-shows and chaos. LolaApril helps salons, spas, and wellness businesses manage bookings, teams, finances, and multi-location operations from one intelligent dashboard. Trusted by 500+ businesses across Nigeria.',
+      keywords: 'salon management software, spa booking system, wellness business platform, appointment scheduling, staff management, salon POS, multi-location management, Nigeria salon software, beauty business management, no-show reduction, KYC verification, automated reminders',
+      ogTitle: 'LolaApril Business Suite - All-in-One Salon & Spa Management Platform',
+      ogDescription: 'Manage bookings, teams, finances, and multi-location operations for your salon, spa, or wellness business. Reduce no-shows by 32% and save 4 hours daily.',
+      ogImage: '/img/og-image.jpg',
+      twitterCard: 'summary_large_image',
+    },
+  },
+
   compatibilityDate: "2025-11-01"
 });

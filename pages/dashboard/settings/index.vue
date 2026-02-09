@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 max-w-6xl mx-auto">
+  <div class="p-8 max-wo">
     <div class="mb-8">
       <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
       <p class="text-gray-500 mt-1">Manage your business configuration and preferences.</p>

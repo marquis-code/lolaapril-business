@@ -1,7 +1,13 @@
 <template>
-  <div class="h-screen w-screen flex bg-gray-100">
-    <!-- Sidebar -->
-    <div class="w-[380px] bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+  <div class="h-screen w-screen flex flex-col md:flex-row bg-gray-100 relative">
+    <!-- Overlay for mobile sidebar -->
+    <div v-if="showSidebarOnMobile" class="fixed inset-0 bg-black/40 z-40 md:hidden" @click="showSidebarOnMobile = false" aria-label="Close sidebar overlay" tabindex="0"></div>
+    <aside
+      class="w-full md:w-[380px] bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-50 md:static fixed top-0 left-0 h-full md:h-auto md:relative transition-transform duration-300 md:translate-x-0"
+      :class="{ '-translate-x-full': !showSidebarOnMobile, 'translate-x-0': showSidebarOnMobile, 'md:translate-x-0': true }"
+      aria-label="Sidebar"
+      tabindex="0"
+    >
       <!-- Sidebar Header -->
       <div class="p-4 bg-gray-50 border-b border-gray-200">
         <div class="flex items-center justify-between mb-4">
@@ -28,7 +34,7 @@
         </div>
 
         <!-- Chat Type Tabs -->
-        <div class="flex gap-1 p-1 bg-gray-200 rounded-lg">
+        <div class="flex gap-1 p-1 bg-gray-200 rounded-lg">                                       
           <button
             v-for="tab in chatTabs"
             :key="tab.value"
@@ -157,10 +163,22 @@
           </button>
         </div>
       </div>
-    </div>
+    </aside>
 
     <!-- Chat Area -->
-    <div class="flex-1 flex flex-col bg-[#e5ddd5]" :style="{ backgroundImage: 'url(/img/chat-bg.png)' }">
+    <div class="flex-1 flex flex-col bg-[#e5ddd5] min-h-0 relative" :style="{ backgroundImage: 'url(/img/chat-bg.png)' }">
+      <!-- Hamburger menu for mobile -->
+      <button
+        @click="showSidebarOnMobile = true"
+        class="absolute top-3 left-3 z-30 md:hidden bg-white rounded-full p-2 shadow-md border border-gray-200"
+        aria-label="Open sidebar"
+        tabindex="0"
+      >
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
       <!-- No Chat Selected -->
       <div v-if="!activeRoom" class="flex-1 flex flex-col items-center justify-center">
         <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-4">
@@ -178,7 +196,7 @@
       <!-- Active Chat -->
       <template v-else>
         <!-- Chat Header -->
-        <div class="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <div class="bg-gray-100 border-b border-gray-200 px-3 py-2 flex items-center justify-between md:px-4 md:py-3">
           <div class="flex items-center gap-3">
             <div 
               class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold"
@@ -213,7 +231,7 @@
         </div>
 
         <!-- Messages -->
-        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-2">
+        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-2 space-y-2 md:p-4">
           <div v-if="messagesLoading" class="flex justify-center py-4">
             <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
           </div>
@@ -317,7 +335,7 @@
         </div>
 
         <!-- Message Input -->
-        <div class="bg-gray-100 border-t border-gray-200 p-3">
+        <div class="bg-gray-100 border-t border-gray-200 p-2 md:p-3">
           <form @submit.prevent="handleSendMessage" class="flex items-end gap-2">
             <!-- Attachment Button -->
             <button type="button" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
@@ -334,7 +352,7 @@
                 @input="handleTyping"
                 placeholder="Type a message..."
                 rows="1"
-                class="w-full px-4 py-2.5 rounded-2xl border border-gray-200 text-sm resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                class="w-full px-3 py-2 rounded-2xl border border-gray-200 text-sm resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none md:px-4 md:py-2.5"
                 :disabled="sendLoading"
               ></textarea>
             </div>
@@ -1275,23 +1293,46 @@ const isOwnMessage = (message: ChatMessage) => {
   return false
 }
 
-const getMessageAlignment = (message: ChatMessage) => {
-  if (message.senderType === 'system') return 'justify-center'
-  // Bot messages should appear on the left (they're automated responses, not from the user)
-  if (message.senderType === 'bot' || message.isAutomated) return 'justify-start'
-  return isOwnMessage(message) ? 'justify-end' : 'justify-start'
-}
+// const getMessageAlignment = (message: ChatMessage) => {
+//   if (message.senderType === 'system') return 'justify-center'
+//   // Bot messages should appear on the left (they're automated responses, not from the user)
+//   if (message.senderType === 'bot' || message.isAutomated) return 'justify-start'
+//   return isOwnMessage(message) ? 'justify-end' : 'justify-start'
+// }
 
-const getMessageBubbleClass = (message: ChatMessage) => {
-  // Auto-assistant / bot messages - distinctive purple styling
+// const getMessageBubbleClass = (message: ChatMessage) => {
+//   // Auto-assistant / bot messages - distinctive purple styling
+//   if (message.senderType === 'bot' || message.isAutomated) {
+//     return 'bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-900 rounded-tl-sm border border-purple-200/50'
+//   }
+//   if (isOwnMessage(message)) {
+//     return 'bg-[#dcf8c6] text-gray-900 rounded-tr-sm'
+//   }
+//   return 'bg-white text-gray-900 rounded-tl-sm'
+// }
+
+const getMessageAlignment = (message: any) => {
+  if (!message || typeof message !== 'object') return 'justify-start';
+  if (message.senderType === 'system') return 'justify-center';
+  if (message.senderType === 'bot' || message.isAutomated) return 'justify-start';
+  if (message.senderType === 'staff') return 'justify-start';
+  if (message.senderType === 'customer' || message.senderType === 'guest') return 'justify-end';
+  return 'justify-start';
+};
+
+const getMessageBubbleClass = (message: any) => {
+  if (!message || typeof message !== 'object') return 'bg-white text-gray-900 rounded-tl-sm';
   if (message.senderType === 'bot' || message.isAutomated) {
-    return 'bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-900 rounded-tl-sm border border-purple-200/50'
+    return 'bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-900 rounded-tl-sm border border-purple-200/50';
   }
-  if (isOwnMessage(message)) {
-    return 'bg-[#dcf8c6] text-gray-900 rounded-tr-sm'
+  if (message.senderType === 'staff') {
+    return 'bg-white text-gray-900 rounded-tl-sm border border-gray-200';
   }
-  return 'bg-white text-gray-900 rounded-tl-sm'
-}
+  if (message.senderType === 'customer' || message.senderType === 'guest') {
+    return 'bg-[#dcf8c6] text-gray-900 rounded-tr-sm';
+  }
+  return 'bg-white text-gray-900 rounded-tl-sm';
+};
 
 const formatRelativeTime = (date?: string) => {
   if (!date) return ''
@@ -1567,6 +1608,23 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .w-[380px] {
+    width: 100% !important;
+  }
+  .md\\:flex-row {
+    flex-direction: column !important;
+  }
+  .md\\:static {
+    position: fixed !important;
+  }
+  .md\\:relative {
+    position: static !important;
+  }
+  .md\\:translate-x-0 {
+    transform: none !important;
+  }
+}
 .modal-enter-active,
 .modal-leave-active {
   transition: all 0.2s ease;
