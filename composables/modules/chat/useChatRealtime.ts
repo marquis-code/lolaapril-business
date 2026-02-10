@@ -54,10 +54,27 @@ export const useChatRealtime = () => {
     socket.value.emit('chat:leave-room', { roomId })
   }
 
+  // const sendMessage = (payload: { roomId: string; content: string; attachments?: any[] }) => {
+  //   return new Promise<any>((resolve) => {
+  //     if (!socket.value) return resolve(null)
+  //     socket.value.emit('chat:send-message', payload, (response: any) => resolve(response))
+  //   })
+  // }
+
   const sendMessage = (payload: { roomId: string; content: string; attachments?: any[] }) => {
     return new Promise<any>((resolve) => {
       if (!socket.value) return resolve(null)
-      socket.value.emit('chat:send-message', payload, (response: any) => resolve(response))
+      // Get user info from useUser composable
+      const { userId, fullName } = useUser()
+      // Force senderType to 'staff' for business app
+      const chatPayload = {
+        ...payload,
+        senderType: 'staff',
+        senderId: userId.value,
+        senderName: fullName.value || 'Staff',
+        messageType: 'text'
+      }
+      socket.value.emit('chat:send-message', chatPayload, (response: any) => resolve(response))
     })
   }
 

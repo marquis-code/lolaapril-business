@@ -1393,23 +1393,24 @@ const handleSendMessage = async () => {
   const content = newMessage.value.trim()
   newMessage.value = ''
 
-  // Send via WebSocket for real-time
-  const result = await sendRealtimeMessage({
+  // Log outgoing message attempt (WebSocket)
+  console.log('[Chat] Outgoing WebSocket message', {
     roomId: activeRoom.value._id,
-    content
+    senderId: userId.value,
+    senderType: 'staff',
+    senderName: fullName.value || 'Staff',
+    content,
+    messageType: 'text'
   })
 
-  if (!result?.success) {
-    // Fallback to HTTP API
-    const payload = {
-      senderId: userId.value,
-      senderType: 'staff' as const,
-      senderName: fullName.value || 'Staff',
-      content,
-      messageType: 'text'
-    }
-    await sendMessage(activeRoom.value._id, payload)
-  }
+  // Always use WebSocket for sending messages
+  await sendRealtimeMessage({
+    roomId: activeRoom.value._id,
+    content,
+    userId: userId.value,
+    senderType: 'staff',
+    senderName: fullName.value || 'Staff'
+  })
 
   scrollToBottom()
 }
@@ -1551,6 +1552,8 @@ const scrollToBottom = () => {
 
 // Real-time event handlers
 onNewMessage((message: ChatMessage) => {
+  // Log all incoming messages for debugging senderType/senderId
+  console.log('[Chat] Incoming message', message)
   if (!message.roomId) return
   
   if (activeRoom.value?._id === message.roomId) {
@@ -1576,8 +1579,13 @@ onNewConversation(() => {
   fetchRooms()
 })
 
-onTyping((data: { roomId: string; userName: string; isTyping: boolean }) => {
-  if (activeRoom.value?._id === data.roomId && data.isTyping) {
+onTyping((data: { roomId: string; userName: string; isTyping: boolean; senderType?: string }) => {
+  // Listen for typing events from customers only
+  if (
+    activeRoom.value?._id === data.roomId &&
+    data.isTyping &&
+    (data.senderType === 'customer' || !data.senderType)
+  ) {
     typingUser.value = data.userName
     setTimeout(() => {
       typingUser.value = null

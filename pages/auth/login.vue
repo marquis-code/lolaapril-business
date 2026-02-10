@@ -49,7 +49,7 @@
         </label>
         <NuxtLink 
           to="/auth/forgot-password" 
-          class="font-medium hover:underline"
+          class="font-semibold hover:underline"
           style="color: #005967"
         >
           Forgot password?
@@ -124,8 +124,10 @@ const success = ref('')
 const { login, loading, error } = useLogin()
 
 const form = reactive<BusinessLoginDto>({
-  email: 'benita@gmail.com',
-  password: 'Miles1999@'
+  email: '',
+  password: ''
+  // email: 'benita@gmail.com',
+  // password: 'Miles1999@'
 })
 
 const handleLogin = async () => {
