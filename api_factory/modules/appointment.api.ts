@@ -56,5 +56,10 @@ export const appointment_api = {
   remove: (id: string) => {
     const url = `/appointments/${id}`
     return GATEWAY_ENDPOINT_WITH_AUTH.delete(url)
+  },
+
+  markAsCompleted: (id: string) => {
+    const url = `/appointments/${id}/complete`
+    return GATEWAY_ENDPOINT_WITH_AUTH.post(url, {})
   }
 }

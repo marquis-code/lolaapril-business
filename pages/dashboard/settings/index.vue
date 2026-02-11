@@ -30,21 +30,21 @@
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
         </div>
 
-        <div v-else class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <div v-else class="bg-white rounded-xl border-[0.5px] border-gray-50 shadow-sm p-8">
           <!-- Business Info -->
           <div v-if="activeTab === 'business'" class="space-y-6">
             <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-4">Business Information</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <UiAnimatedInput v-model="form.settings.businessName" type="text" label="Business Name" placeholder="Enter business name" />
-              <UiAnimatedInput v-model="form.settings.businessEmail" type="email" label="Business Email" placeholder="Enter business email" />
-              <UiAnimatedInput v-model="form.settings.businessPhone.countryCode" type="text" label="Phone Country Code" placeholder="e.g. +234" />
-              <UiAnimatedInput v-model="form.settings.businessPhone.number" type="text" label="Phone Number" placeholder="Enter phone number" />
-              <UiAnimatedInput v-model="form.settings.businessAddress.street" type="text" label="Street" placeholder="Enter street address" />
-              <UiAnimatedInput v-model="form.settings.businessAddress.city" type="text" label="City" placeholder="Enter city" />
-              <UiAnimatedInput v-model="form.settings.businessAddress.region" type="text" label="Region" placeholder="Enter region" />
-              <UiAnimatedInput v-model="form.settings.businessAddress.postcode" type="text" label="Postcode" placeholder="Enter postcode" />
-              <UiAnimatedInput v-model="form.settings.businessAddress.country" type="text" label="Country" placeholder="Enter country" />
+              <UiAnimatedInput v-model="form.settings.businessName" type="text" label="Business Name"  />
+              <UiAnimatedInput v-model="form.settings.businessEmail" type="email" label="Business Email"  />
+              <UiAnimatedInput v-model="form.settings.businessPhone.countryCode" type="text" label="Phone Country Code" />
+              <UiAnimatedInput v-model="form.settings.businessPhone.number" type="text" label="Phone Number" />
+              <UiAnimatedInput v-model="form.settings.businessAddress.street" type="text" label="Street" />
+              <UiAnimatedInput v-model="form.settings.businessAddress.city" type="text" label="City" />
+              <UiAnimatedInput v-model="form.settings.businessAddress.region" type="text" label="Region" />
+              <UiAnimatedInput v-model="form.settings.businessAddress.postcode" type="text" label="Postcode" />
+              <UiAnimatedInput v-model="form.settings.businessAddress.country" type="text" label="Country" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -82,8 +82,8 @@
             <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-4">Appointment Settings</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <UiAnimatedInput v-model.number="form.appointmentSettings.defaultAppointmentDuration" type="number" label="Default Appointment Duration (mins)" placeholder="Enter duration in minutes" />
-              <UiAnimatedInput v-model.number="form.appointmentSettings.bookingWindowHours" type="number" label="Booking Window (hours)" placeholder="Enter booking window in hours" />
+              <UiAnimatedInput v-model.number="form.appointmentSettings.defaultAppointmentDuration" type="number" label="Default Appointment Duration (mins)" />
+              <UiAnimatedInput v-model.number="form.appointmentSettings.bookingWindowHours" type="number" label="Booking Window (hours)" />
               <label class="flex items-center gap-3 text-sm font-medium text-gray-700">
                 <input v-model="form.appointmentSettings.allowOnlineBooking" type="checkbox" class="custom-checkbox" />
                 Allow online booking
@@ -97,11 +97,11 @@
             <div class="space-y-4">
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Appointment Statuses</h3>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                  <UiAnimatedInput v-model="appointmentStatusDraft.statusName" type="text" label="Status Name" placeholder="Status name" />
-                  <UiAnimatedInput v-model="appointmentStatusDraft.statusIcon" type="text" label="Icon" placeholder="Icon" />
-                  <UiAnimatedInput v-model="appointmentStatusDraft.statusColor" type="text" label="Color" placeholder="#40E0D0" />
-                  <UiAnimatedInput v-model.number="appointmentStatusDraft.characterLimit" type="number" label="Limit" placeholder="Limit" />
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <UiAnimatedInput v-model="appointmentStatusDraft.statusName" type="text" label="Status Name" />
+                  <UiAnimatedInput v-model="appointmentStatusDraft.statusIcon" type="text" label="Icon" />
+                  <UiAnimatedInput v-model="appointmentStatusDraft.statusColor" type="text" label="Color" />
+                  <UiAnimatedInput v-model.number="appointmentStatusDraft.characterLimit" type="number" label="Limit" />
                   <button type="button" @click="addAppointmentStatus" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
                 <div v-if="form.appointmentSettings.appointmentStatuses.length" class="mt-3 space-y-2">
@@ -114,9 +114,9 @@
 
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Cancellation Reasons</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <UiAnimatedInput v-model="cancellationReasonDraft.name" type="text" label="Reason" placeholder="Reason" />
-                  <UiSelectInput v-model="cancellationReasonDraft.reasonType" label="Reason Type" :options="cancellationReasonTypeOptions" option-label="label" option-value="value" placeholder="Select type" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <UiAnimatedInput v-model="cancellationReasonDraft.name" type="text" label="Reason" />
+                  <UiSelectInput v-model="cancellationReasonDraft.reasonType" label="Reason Type" :options="cancellationReasonTypeOptions" option-label="label" option-value="value" />
                   <button type="button" @click="addCancellationReason" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
                 <div v-if="form.appointmentSettings.cancellationReasons.length" class="mt-3 space-y-2">
@@ -142,8 +142,8 @@
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Resources</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <UiAnimatedInput v-model="resourceDraft.name" type="text" label="Resource Name" placeholder="Resource name" />
-                  <UiAnimatedInput v-model="resourceDraft.description" type="text" label="Description" placeholder="Description" />
+                  <UiAnimatedInput v-model="resourceDraft.name" type="text" label="Resource Name" />
+                  <UiAnimatedInput v-model="resourceDraft.description" type="text" label="Description" />
                   <button type="button" @click="addResource" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
                 <div class="flex items-center gap-3 mt-2 text-sm text-gray-600">
@@ -160,10 +160,10 @@
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Blocked Time Types</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <UiAnimatedInput v-model="blockedTimeDraft.type" type="text" label="Type" placeholder="Type" />
-                  <UiAnimatedInput v-model="blockedTimeDraft.typeIcon" type="text" label="Icon" placeholder="Icon" />
-                  <UiAnimatedInput v-model="blockedTimeDraft.duration" type="text" label="Duration" placeholder="Duration" />
-                  <UiSelectInput v-model="blockedTimeDraft.compensation" label="Compensation" :options="compensationOptions" option-label="label" option-value="value" placeholder="Select compensation" />
+                  <UiAnimatedInput v-model="blockedTimeDraft.type" type="text" label="Type" />
+                  <UiAnimatedInput v-model="blockedTimeDraft.typeIcon" type="text" label="Icon" />
+                  <UiAnimatedInput v-model="blockedTimeDraft.duration" type="text" label="Duration" />
+                  <UiSelectInput v-model="blockedTimeDraft.compensation" label="Compensation" :options="compensationOptions" option-label="label" option-value="value" />
                 </div>
                 <div class="flex items-center gap-3 mt-2">
                   <label class="flex items-center gap-2 text-sm text-gray-600">
@@ -190,9 +190,9 @@
             <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-4">Closed Periods</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <UiAnimatedInput v-model="closedPeriodDraft.startDate" type="date" label="Start Date" placeholder="Select start date" />
-              <UiAnimatedInput v-model="closedPeriodDraft.endDate" type="date" label="End Date" placeholder="Select end date" />
-              <UiAnimatedInput v-model="closedPeriodDraft.description" type="text" label="Description" placeholder="Description" />
+              <UiAnimatedInput v-model="closedPeriodDraft.startDate" type="date" label="Start Date" />
+              <UiAnimatedInput v-model="closedPeriodDraft.endDate" type="date" label="End Date" />
+              <UiAnimatedInput v-model="closedPeriodDraft.description" type="text" label="Description" />
               <button type="button" @click="addClosedPeriod" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
             </div>
             <div class="flex gap-6 mt-3">
@@ -222,8 +222,8 @@
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Payment Methods</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <UiAnimatedInput v-model="paymentMethodDraft.name" type="text" label="Method Name" placeholder="Method name" />
-                  <UiSelectInput v-model="paymentMethodDraft.paymentType" label="Payment Type" :options="paymentTypeOptions" option-label="label" option-value="value" placeholder="Select type" />
+                  <UiAnimatedInput v-model="paymentMethodDraft.name" type="text" label="Method Name" />
+                  <UiSelectInput v-model="paymentMethodDraft.paymentType" label="Payment Type" :options="paymentTypeOptions" option-label="label" option-value="value" />
                   <label class="flex items-center gap-2 text-sm text-gray-600">
                     <input v-model="paymentMethodDraft.enabled" type="checkbox" class="custom-checkbox" /> Enabled
                   </label>
@@ -240,8 +240,8 @@
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Taxes</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <UiAnimatedInput v-model="taxDraft.taxName" type="text" label="Tax Name" placeholder="Tax name" />
-                  <UiAnimatedInput v-model.number="taxDraft.taxRate" type="number" label="Tax Rate" placeholder="Rate" />
+                  <UiAnimatedInput v-model="taxDraft.taxName" type="text" label="Tax Name" />
+                  <UiAnimatedInput v-model.number="taxDraft.taxRate" type="number" label="Tax Rate" />
                   <button type="button" @click="addTax" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Add</button>
                 </div>
                 <div v-if="form.paymentSettings.taxes.length" class="mt-3 space-y-2">
@@ -265,18 +265,18 @@
 
             <div>
               <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <UiAnimatedInput v-model="serviceChargeDraft.basicInfo.name" type="text" label="Charge Name" placeholder="Charge name" />
-                <UiAnimatedInput v-model="serviceChargeDraft.basicInfo.description" type="text" label="Description" placeholder="Description" />
-                <UiSelectInput v-model="serviceChargeDraft.rateType.type" label="Rate Type" :options="rateTypeOptions" option-label="label" option-value="value" placeholder="Select rate type" />
-                <UiAnimatedInput v-model.number="serviceChargeDraft.rateType.percentage" type="number" label="Percentage" placeholder="Percentage" />
+                <UiAnimatedInput v-model="serviceChargeDraft.basicInfo.name" type="text" label="Charge Name" />
+                <UiAnimatedInput v-model="serviceChargeDraft.basicInfo.description" type="text" label="Description" />
+                <UiSelectInput v-model="serviceChargeDraft.rateType.type" label="Rate Type" :options="rateTypeOptions" option-label="label" option-value="value" />
+                <UiAnimatedInput v-model.number="serviceChargeDraft.rateType.percentage" type="number" label="Percentage" />
               </div>
               <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
-                <UiAnimatedInput v-model="serviceChargeDraft.settings.applyServiceChargeOn" type="text" label="Apply On" placeholder="Apply on" />
+                <UiAnimatedInput v-model="serviceChargeDraft.settings.applyServiceChargeOn" type="text" label="Apply On" />
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                   <input v-model="serviceChargeDraft.settings.automaticallyApplyDuringCheckout" type="checkbox" class="custom-checkbox" /> Auto apply
                 </label>
-                <UiAnimatedInput v-model="serviceChargeDraft.taxRate.tax" type="text" label="Tax" placeholder="Tax" />
-                <UiAnimatedInput v-model.number="serviceChargeDraft.taxRate.rate" type="number" label="Tax Rate" placeholder="Tax rate" />
+                <UiAnimatedInput v-model="serviceChargeDraft.taxRate.tax" type="text" label="Tax" />
+                <UiAnimatedInput v-model.number="serviceChargeDraft.taxRate.rate" type="number" label="Tax Rate" />
               </div>
               <div class="flex items-center gap-3 mt-2">
                 <label class="flex items-center gap-2 text-sm text-gray-600">
@@ -306,10 +306,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
                 <div class="flex gap-2">
                    <input type="color" v-model="form.theme.primaryColor" class="h-10 w-10 rounded border border-gray-200 cursor-pointer p-1" />
-                   <UiAnimatedInput v-model="form.theme.primaryColor" type="text" label="Color Code" placeholder="#000000" />
+                   <UiAnimatedInput v-model="form.theme.primaryColor" type="text" label="Color Code" />
                 </div>
               </div>
-              <UiSelectInput v-model="form.theme.fontFamily" label="Font Family" :options="fontFamilyOptions" option-label="label" option-value="value" placeholder="Select font family" />
+              <UiSelectInput v-model="form.theme.fontFamily" label="Font Family" :options="fontFamilyOptions" option-label="label" option-value="value" />
             </div>
 
             <div class="pt-4">
@@ -345,7 +345,7 @@
             <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-4">Custom Domains</h2>
 
             <div class="flex gap-4 mb-6">
-               <UiAnimatedInput v-model="newDomain" type="text" label="Domain" placeholder="example.com" class="flex-1" />
+               <UiAnimatedInput v-model="newDomain" type="text" label="Domain"   class="flex-1" />
                <button @click="addDomain" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800">Connect Domain</button>
             </div>
 

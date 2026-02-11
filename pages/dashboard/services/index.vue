@@ -15,7 +15,7 @@
 
     <div class="flex items-center gap-2 mb-6">
       <button
-        class="px-4 py-2 rounded-lg text-sm font-medium"
+        class="px-4 py-2 rounded-lg text-sm fontF-medium"
         :class="activeTab === 'services' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
         @click="activeTab = 'services'"
       >

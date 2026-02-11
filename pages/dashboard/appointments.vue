@@ -459,6 +459,16 @@
                 <span>Created: {{ formatDate(selectedAppointment.createdAt) }}</span>
                 <span>Updated: {{ formatDate(selectedAppointment.updatedAt) }}</span>
               </div>
+
+               <div v-if="selectedAppointment.status !== 'completed' && selectedAppointment.status !== 'cancelled'" class="pt-4 border-t border-gray-100">
+                <button
+                  @click="handleMarkCompleted(selectedAppointment.id || selectedAppointment._id)"
+                  :disabled="markCompletedLoading"
+                  class="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#005967] hover:bg-[#004450] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {{ markCompletedLoading ? 'Processing...' : 'Mark as Completed' }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -471,6 +481,32 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import { useGetAppointments } from '@/composables/modules/appointment/useGetAppointments'
 import { useGetAppointmentStats } from '@/composables/modules/appointment/useGetAppointmentStats'
+import { useMarkAppointmentCompleted } from '@/composables/modules/appointment/useMarkAppointmentCompleted'
+
+// definePageMeta({
+//   layout: 'dashboard',
+//   middleware: 'auth'
+// })
+
+// const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+// const filterStatus = ref('')
+// const filterStaff = ref('')
+// const currentDate = ref(new Date())
+// const goToDateInput = ref('')
+
+// const selectedDay = ref<any>(null)
+// const selectedAppointment = ref<any>(null)
+
+// const { data: appointmentList, loading, execute: fetchAppointments } = useGetAppointments()
+// const { data: stats, loading: statsLoading, execute: fetchStats } = useGetAppointmentStats()
+const { markAsCompleted, loading: markCompletedLoading } = useMarkAppointmentCompleted()
+
+const handleMarkCompleted = async (id: string) => {
+  await markAsCompleted(id)
+  selectedAppointment.value = null
+  await refreshAppointments()
+}
 
 definePageMeta({
   layout: 'dashboard',

@@ -41,7 +41,7 @@
       <div v-else class="flex flex-col md:flex-row gap-8">
         <!-- Current Plan (left) -->
         <div class="md:w-1/3 w-full bg-gray-50 rounded-2xl p-6 flex flex-col mb-6 md:mb-0">
-          <!-- <span class="inline-block bg-blue-100 text-blue-700 text-sm font-semibold px-3 py-1 rounded-full mb-2">Current Plan</span> -->
+          <!-- <span class="inline-block bg-blue-100 text-primary text-sm font-semibold px-3 py-1 rounded-full mb-2">Current Plan</span> -->
           <h3 class="text-2xl font-bold mb-2">{{ currentPlan.name }}</h3>
           <p class="text-gray-500 mb-6">{{ currentPlan.description }}</p>
           <ul class="mb-4 space-y-3">
@@ -74,31 +74,31 @@
         <!-- Plans (right) -->
         <div class="md:w-2/3 w-full flex flex-col gap-4">
           <div class="flex gap-4 mb-4">
-            <button @click="showYearly = false" :class="['px-4 py-1 rounded-full text-sm font-semibold', !showYearly ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700']">Monthly</button>
-            <button @click="showYearly = true" :class="['px-4 py-1 rounded-full text-sm font-semibold', showYearly ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700']">Yearly</button>
+            <button @click="showYearly = false" :class="['px-4 py-1 rounded-full text-sm font-semibold', !showYearly ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700']">Monthly</button>
+            <button @click="showYearly = true" :class="['px-4 py-1 rounded-full text-sm font-semibold', showYearly ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700']">Yearly</button>
           </div>
           <div v-for="(tier, idx) in pricingTiers" :key="tier._id"
             class="rounded-2xl border bg-white flex flex-col md:flex-row items-start md:items-center p-6 gap-4 md:gap-0 relative transition-all duration-200"
             :class="[
-              selectedPlan === idx ? 'border-blue-500 bg-blue-50' : 'border-gray-200',
-              'hover:border-blue-500 hover:bg-blue-50'
+              selectedPlan === idx ? 'border-primary bg-blue-50' : 'border-gray-200',
+              'hover:border-primary hover:bg-blue-50'
             ]"
             @click="selectedPlan = idx"
             style="cursor:pointer"
           >
             <div class="absolute left-6 top-6 flex items-center justify-center">
-              <span class="inline-block w-4 h-4 rounded-full border-2 flex items-center justify-center" :class="selectedPlan === idx ? 'border-blue-500' : 'border-gray-400'">
-                <span v-if="selectedPlan === idx" class="block w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="inline-block w-4 h-4 rounded-full border-2 flex items-center justify-center" :class="selectedPlan === idx ? 'border-primary' : 'border-gray-400'">
+                <span v-if="selectedPlan === idx" class="block w-2 h-2 rounded-full bg-primary"></span>
               </span>
             </div>
             <div class="flex-1 flex flex-col pl-10">
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-lg md:text-xl font-bold text-gray-900">{{ tier.tierName }}</span>
-                <span v-if="idx === recommendedIndex" class="bg-blue-100 text-blue-700 text-sm font-semibold px-2 py-1 rounded-full">Recommended</span>
+                <span v-if="idx === recommendedIndex" class="bg-blue-100 text-primary text-sm font-semibold px-2 py-1 rounded-full">Recommended</span>
               </div>
               <p class="text-gray-500 text-sm mb-2">{{ tier.description }}</p>
               <!-- Features moved to left card -->
-              <NuxtLink to="#" class="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:underline">
+              <NuxtLink to="#" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline">
                 See all features
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -106,7 +106,7 @@
               </NuxtLink>
             </div>
             <div class="flex flex-col items-end md:items-center md:w-32">
-              <span class="text-xl md:text-2xl font-bold text-blue-600">
+              <span class="text-xl md:text-2xl font-bold text-primary">
                 <template v-if="showYearly">
                   {{ Number(tier.yearlyPrice) === 0 ? 'Free' : '₦' + (Number(tier.yearlyPrice) || 0).toLocaleString() + '/yr' }}
                 </template>
