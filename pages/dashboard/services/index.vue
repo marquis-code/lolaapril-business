@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-900 p-4 md:p-8">
-    <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-3xl font-bold">Service menu</h1>
@@ -23,8 +22,6 @@
 
       </div>
     </div>
-
-    <!-- Search and Filters -->
     <div class="flex items-center gap-4 mb-8 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
       <div class="relative flex-1">
         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
