@@ -35,7 +35,7 @@
             >
               <span 
                 class="w-3 h-3 rounded-full"
-                :class="policy.isActive ? 'bg-green-500' : 'bg-gray-400'"
+                :class="policy.isActive ? 'bg-primary' : 'bg-gray-400'"
               ></span>
             </div>
           </div>

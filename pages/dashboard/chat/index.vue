@@ -24,7 +24,7 @@
             <h1 class="text-xl font-bold text-gray-900">Messages</h1>
           </div>
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full" :class="isConnected ? 'bg-green-500' : 'bg-red-500'"></span>
+            <span class="w-2.5 h-2.5 rounded-full" :class="isConnected ? 'bg-primary' : 'bg-red-500'"></span>
             <button @click="showNewChatModal = true" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
               <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -107,7 +107,7 @@
               </span>
               <span 
                 v-if="getRoomOnlineStatus(room)"
-                class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"
+                class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white rounded-full"
               ></span>
             </div>
 

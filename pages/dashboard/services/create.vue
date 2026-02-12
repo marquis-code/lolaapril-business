@@ -78,6 +78,29 @@
         </div>
       </section>
 
+      <!-- Service Variants -->
+      <section class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Service Variants</h2>
+          <button type="button" @click="addVariant" class="text-sm bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            + Add Variant
+          </button>
+        </div>
+        
+        <div class="space-y-6">
+          <ServiceVariantForm 
+            v-for="(variant, index) in form.variants" 
+            :key="index"
+            v-model="form.variants![index]"
+            @remove="removeVariant(index)"
+          />
+          
+          <div v-if="!form.variants?.length" class="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            No variants added yet. Variants allow you to offer the same service with different options like hair length or expert level.
+          </div>
+        </div>
+      </section>
+
       <!-- Online Booking -->
       <section class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <h2 class="text-lg font-semibold mb-4">Online Booking</h2>
@@ -176,8 +199,31 @@ const form = reactive<CreateServiceDto>({
       enabled: true,
       availableFor: 'All'
     }
-  }
+  },
+  variants: []
 })
+
+const addVariant = () => {
+  form.variants?.push({
+    variantName: '',
+    variantDescription: '',
+    pricing: {
+      priceType: 'Fixed',
+      price: {
+        amount: 0,
+        currency: 'NGN'
+      },
+      duration: { value: 30, unit: 'min' }
+    },
+    settings: {
+      sku: ''
+    }
+  })
+}
+
+const removeVariant = (index: number) => {
+  form.variants?.splice(index, 1)
+}
 
 const handleSubmit = async () => {
   try {
@@ -190,6 +236,12 @@ const handleSubmit = async () => {
     const durationVal = form.pricingAndDuration.duration.servicingTime.value
     const durationUnit = form.pricingAndDuration.duration.servicingTime.unit
     form.pricingAndDuration.duration.totalDuration = `${durationVal} ${durationUnit}`
+
+    // Ensure variants numeric values are numbers
+    form.variants?.forEach(variant => {
+      variant.pricing.price.amount = Number(variant.pricing.price.amount) || 0
+      variant.pricing.duration.value = Number(variant.pricing.duration.value) || 0
+    })
 
     await createService(form)
     router.push('/dashboard/services')

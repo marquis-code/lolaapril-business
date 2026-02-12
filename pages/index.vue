@@ -189,7 +189,7 @@
                     <p class="text-lg font-semibold text-gray-900">Today's Overview</p>
                   </div>
                   <span class="flex items-center gap-1.5 text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-full font-medium">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                     Live
                   </span>
                 </div>
@@ -729,7 +729,7 @@
                           class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full"
                           :class="location.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
                         >
-                          <span class="w-1.5 h-1.5 rounded-full" :class="location.status === 'Active' ? 'bg-green-500' : 'bg-amber-500'"></span>
+                          <span class="w-1.5 h-1.5 rounded-full" :class="location.status === 'Active' ? 'bg-primary' : 'bg-amber-500'"></span>
                           {{ location.status }}
                         </span>
                         <p class="text-xs text-gray-400 mt-1">{{ location.bookings }} bookings today</p>
@@ -765,7 +765,7 @@
                 <div class="space-y-4 mb-8">
                   <div class="bg-white/10 rounded-xl p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                      <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
@@ -776,7 +776,7 @@
                   </div>
                   <div class="bg-white/10 rounded-xl p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                      <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
@@ -787,7 +787,7 @@
                   </div>
                   <div class="bg-white/10 rounded-xl p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                      <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>

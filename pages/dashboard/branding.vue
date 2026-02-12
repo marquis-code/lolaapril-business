@@ -1853,7 +1853,7 @@ const handlePreviewTheme = async () => {
 const getDomainStatusColor = (status: string) => {
   switch (status) {
     case 'verified':
-      return { bg: 'bg-green-50', text: 'text-green-600', badge: 'bg-green-50 text-green-700', dot: 'bg-green-500' }
+      return { bg: 'bg-green-50', text: 'text-green-600', badge: 'bg-green-50 text-green-700', dot: 'bg-primary' }
     case 'pending':
     case 'pending_verification':
       return { bg: 'bg-amber-50', text: 'text-amber-600', badge: 'bg-amber-50 text-amber-700', dot: 'bg-amber-500' }

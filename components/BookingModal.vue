@@ -834,130 +834,84 @@
         </div>
       </div>
 
-      <!-- Service Variant Modal -->
+      <!-- Service Variant Modal Overlay -->
       <Teleport to="body" v-if="showVariantModal && selectedServiceForVariant">
-        <div
-          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4"
-        >
-          <div
-            class="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto"
-          >
-            <div
-              class="sticky top-0 bg-white border-b p-6 flex items-center justify-between"
-            >
-              <h2 class="text-xl font-bold">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
+          <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative">
+            <!-- Close Button -->
+            <button @click="closeVariantModal" class="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10">
+              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+              <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 pr-10 leading-tight">
                 {{ selectedServiceForVariant.basicDetails.serviceName }}
               </h2>
-              <button
-                @click="closeVariantModal"
-                class="text-gray-400 hover:text-gray-600"
-              >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
 
-            <div class="p-6">
-              <p class="text-gray-600 text-sm mb-6">
-                {{ selectedServiceForVariant.basicDetails.description }}
-              </p>
+              <div class="mb-8">
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed" :class="{ 'line-clamp-3': !showFullDescription }">
+                  {{ selectedServiceForVariant.basicDetails.description }}
+                </p>
+                <button v-if="selectedServiceForVariant.basicDetails.description?.length > 150" @click="showFullDescription = !showFullDescription" class="text-primary font-medium text-sm mt-1 hover:underline">
+                  {{ showFullDescription ? 'Read less' : 'Read more' }}
+                </button>
+              </div>
 
-              <h3 class="font-semibold mb-4">Select an option *</h3>
+              <h3 class="text-base font-bold text-gray-900 mb-4">Select an option *</h3>
 
-              <div class="space-y-3">
+              <div class="space-y-2">
                 <div
-                  v-for="variant in selectedServiceForVariant.pricingAndDuration
-                    .variants"
-                  :key="variant.name"
+                  v-for="variant in selectedServiceForVariant.variants"
+                  :key="variant._id"
                   @click="selectVariant(variant)"
                   :class="[
-                    'p-4 border-2 rounded-lg cursor-pointer transition',
-                    selectedVariant?.name === variant.name
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-200 hover:border-gray-300',
+                    'p-4 rounded-2xl cursor-pointer transition-all border border-transparent',
+                    selectedVariant?._id === variant._id
+                      ? 'bg-gray-50 border-gray-100'
+                      : 'hover:bg-gray-50'
                   ]"
                 >
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <h4 class="font-medium mb-1">{{ variant.name }}</h4>
-                      <p class="text-sm text-gray-500">
-                        {{ formatDuration(variant.duration.servicingTime) }}
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-bold text-gray-900 mb-0.5">{{ variant.variantName }}</h4>
+                      <p class="text-sm text-gray-400 mb-1">
+                        {{ formatDuration(variant.pricing.duration) }}
+                      </p>
+                      <p class="font-bold text-gray-900">
+                        {{ formatPrice(variant.pricing.price) }}
                       </p>
                     </div>
-                    <div class="flex items-center gap-3">
-                      <span class="font-bold">{{
-                        formatPrice(variant.price)
-                      }}</span>
-                      <div
-                        :class="[
-                          'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                          selectedVariant?.name === variant.name
-                            ? 'border-primary bg-primary'
-                            : 'border-gray-300',
-                        ]"
-                      >
-                        <svg
-                          v-if="selectedVariant?.name === variant.name"
-                          class="w-3 h-3 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clip-rule="evenodd"
-                          />
-                        </svg>
-                      </div>
+                    <div
+                      class="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors"
+                      :class="selectedVariant?._id === variant._id ? 'border-primary' : 'border-gray-200'"
+                    >
+                      <div v-if="selectedVariant?._id === variant._id" class="w-3 h-3 rounded-full bg-primary animate-in fade-in scale-in duration-200"></div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="mt-6 pt-6 border-t-[0.5px] border-gray-100">
-                <div class="flex items-center justify-between mb-4">
-                  <span class="font-bold">
-                    {{
-                      selectedVariant
-                        ? formatPrice(selectedVariant.price)
-                        : formatPrice(
-                            selectedServiceForVariant.pricingAndDuration.price
-                          )
-                    }}
-                  </span>
-                  <span class="text-sm text-gray-500">
-                    {{
-                      selectedVariant
-                        ? formatDuration(selectedVariant.duration.servicingTime)
-                        : formatDuration(
-                            selectedServiceForVariant.pricingAndDuration
-                              .duration.servicingTime
-                          )
-                    }}
-                  </span>
+            <!-- Sticky Footer -->
+            <div class="p-6 sm:p-8 border-t border-gray-100 bg-white">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-gray-900 font-bold text-lg leading-none mb-1">
+                    {{ selectedVariant ? formatPrice(selectedVariant.pricing.price) : `from ${formatPrice(getMinPrice(selectedServiceForVariant))}` }}
+                  </p>
+                  <p class="text-xs text-gray-500 font-medium">
+                    {{ selectedVariant ? formatDuration(selectedVariant.pricing.duration) : getDurationRange(selectedServiceForVariant) }}
+                  </p>
                 </div>
-
                 <button
                   @click="addVariantServiceToCart"
-                  :disabled="
-                    !selectedVariant &&
-                    selectedServiceForVariant.pricingAndDuration.variants
-                      ?.length > 0
-                  "
-                  class="w-full bg-gray-900 text-white font-bold py-3 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800"
+                  :disabled="!selectedVariant"
+                  class="bg-gray-400 hover:bg-gray-500 disabled:bg-[#BDBDBD] text-white font-bold py-3 px-10 rounded-full transition-all disabled:cursor-not-allowed"
                 >
-                  Add to booking
+                  Add
                 </button>
               </div>
             </div>
@@ -1277,6 +1231,7 @@ const bookingNotes = ref("");
 const showVariantModal = ref(false);
 const selectedServiceForVariant = ref<any>(null);
 const selectedVariant = ref<any>(null);
+const showFullDescription = ref(false);
 
 // Extra service modal
 const showExtraServiceModal = ref(false);
@@ -1551,8 +1506,8 @@ const isServiceInCart = (serviceId: string) => {
 
 const handleServiceClick = (service: any) => {
   if (
-    service.pricingAndDuration.variants &&
-    service.pricingAndDuration.variants.length > 0
+    service.variants &&
+    service.variants.length > 0
   ) {
     selectedServiceForVariant.value = service;
     selectedVariant.value = null;
@@ -1585,11 +1540,21 @@ const selectVariant = (variant: any) => {
 };
 
 const addVariantServiceToCart = () => {
-  if (selectedServiceForVariant.value) {
-    cart.value.push({
+  if (selectedServiceForVariant.value && selectedVariant.value) {
+    const item = {
       service: selectedServiceForVariant.value,
-      selectedVariant: selectedVariant.value,
-    });
+      selectedVariant: {
+        _id: selectedVariant.value._id,
+        name: selectedVariant.value.variantName,
+        price: selectedVariant.value.pricing.price,
+        duration: selectedVariant.value.pricing.duration
+      }
+    };
+    
+    // Remove if already in cart (any variant) then add new selection
+    removeFromCart(selectedServiceForVariant.value._id);
+    cart.value.push(item);
+    
     closeVariantModal();
   }
 };
@@ -1598,6 +1563,24 @@ const closeVariantModal = () => {
   showVariantModal.value = false;
   selectedServiceForVariant.value = null;
   selectedVariant.value = null;
+  showFullDescription.value = false;
+};
+
+const getMinPrice = (service: any) => {
+  if (!service.variants?.length) return service.pricingAndDuration.price;
+  return service.variants.reduce((min: any, v: any) => {
+    return v.pricing.price.amount < min.amount ? v.pricing.price : min;
+  }, service.variants[0].pricing.price);
+};
+
+const getDurationRange = (service: any) => {
+  if (!service.variants?.length) return formatDuration(service.pricingAndDuration.duration.servicingTime);
+  
+  const minDur = formatDuration(service.variants[0].pricing.duration);
+  const maxDur = formatDuration(service.variants[service.variants.length - 1].pricing.duration);
+  
+  if (minDur === maxDur) return minDur;
+  return `${minDur} - ${maxDur}`;
 };
 
 // const proceedToDateTime = () => {

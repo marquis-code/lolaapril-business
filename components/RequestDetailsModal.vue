@@ -74,7 +74,10 @@
         <div class="service-row" v-for="service in selectedRequest.services" :key="service._id">
           <div class="service-name-wrap">
             <span class="service-dot"></span>
-            <span class="service-name">{{ service.serviceName }}</span>
+            <div class="flex flex-col">
+              <span class="service-name">{{ service.serviceName }}</span>
+              <span v-if="service.variantName" class="text-[10px] text-[#c49e4b] opacity-70">{{ service.variantName }}</span>
+            </div>
           </div>
           <div class="service-pricing">
             <span class="service-qty">× {{ service.quantity }}</span>

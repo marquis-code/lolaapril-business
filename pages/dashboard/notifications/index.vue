@@ -19,7 +19,7 @@
             ></span>
             <span 
               class="relative inline-flex rounded-full h-2 w-2"
-              :class="isConnected ? 'bg-green-500' : 'bg-red-500'"
+              :class="isConnected ? 'bg-primary' : 'bg-red-500'"
             ></span>
           </span>
           {{ isConnected ? 'Live' : 'Offline' }}

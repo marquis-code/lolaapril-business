@@ -996,7 +996,7 @@ const getStatusDotClass = (status?: string) => {
   const classes: Record<string, string> = {
     pending: 'bg-yellow-500',
     confirmed: 'bg-blue-500',
-    completed: 'bg-green-500',
+    completed: 'bg-primary',
     cancelled: 'bg-red-500',
     expired: 'bg-gray-500',
     no_show: 'bg-orange-500',

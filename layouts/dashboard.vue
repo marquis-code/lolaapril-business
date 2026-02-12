@@ -60,7 +60,7 @@
             </svg>
             <span
               v-if="totalUnreadChats > 0"
-              class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold text-white bg-green-500 rounded-full"
+              class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold text-white bg-primary rounded-full"
             >
               {{ totalUnreadChats > 99 ? '99+' : totalUnreadChats }}
             </span>
@@ -193,7 +193,7 @@
                 </svg>
                 <span
                   v-if="totalUnreadChats > 0"
-                  class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold text-white bg-green-500 rounded-full"
+                  class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold text-white bg-primary rounded-full"
                 >
                   {{ totalUnreadChats > 99 ? '99+' : totalUnreadChats }}
                 </span>
@@ -366,6 +366,7 @@ onMounted(async () => {
 // SVG icons as inline strings for each menu item
 const icons = {
   mobileSpa: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+  consultations: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>`,
   reviews: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
   dashboard: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>`,
   profile: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>`,
@@ -409,6 +410,7 @@ const navItems = [
   { path: '/dashboard/cancellation', label: 'Cancellations', icon: icons.cancellation },
   { path: '/dashboard/reviews', label: 'Reviews', icon: icons.reviews },
   { path: '/dashboard/mobile-spa', label: 'Mobile Spa', icon: icons.mobileSpa },
+  { path: '/dashboard/consultations', label: 'Consultations', icon: icons.consultations },
   
   
   // Services
@@ -460,6 +462,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard/bookings-management': { title: 'Bookings', description: 'Manage business bookings and client requests' },
   '/dashboard/appointments': { title: 'Appointments', description: 'Manage business appointments and staff schedules' },
   '/dashboard/availability': { title: 'Availability', description: 'Manage business hours and staff availability' },
+  '/dashboard/consultations': { title: 'Consultations', description: 'Manage packages, schedule and consultation bookings' },
   '/dashboard/cancellation': { title: 'Cancellations', description: 'Manage cancellation policies, refunds, and no-shows' },
   '/dashboard/services': { title: 'Services', description: 'Create and manage your business services' },
   '/dashboard/payments': { title: 'Payments', description: 'Manage transactions, refunds, and verification' },

@@ -191,7 +191,7 @@ const strengthColor = computed(() => {
   if (passwordStrength.value <= 1) return 'bg-red-500'
   if (passwordStrength.value === 2) return 'bg-yellow-500'
   if (passwordStrength.value === 3) return 'bg-blue-500'
-  return 'bg-green-500'
+  return 'bg-primary'
 })
 
 const strengthTextClass = computed(() => {

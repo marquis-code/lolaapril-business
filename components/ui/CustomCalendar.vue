@@ -14,7 +14,7 @@
            :class="{ 'bg-blue-100': isToday(cell.date), 'opacity-50': !cell.inMonth }"
            @click="cell.inMonth && $emit('select-date', cell.date)">
         <div class="text-xs mt-1">{{ cell.day }}</div>
-        <div v-if="cell.hasSlots" class="mt-1 w-2 h-2 rounded-full bg-green-500"></div>
+        <div v-if="cell.hasSlots" class="mt-1 w-2 h-2 rounded-full bg-primary"></div>
       </div>
     </div>
   </div>
