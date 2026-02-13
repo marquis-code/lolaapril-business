@@ -15,8 +15,12 @@ export const useFetchCommissionBreakdown = () => {
             const response = await analytics_api.getCommissionBreakdown({
                 startDate,
                 endDate
-            })
-            data.value = response.data.data || response.data
+            }) as any
+            if (response.type === 'ERROR') {
+                error.value = response.data?.message || 'Failed to fetch commission breakdown'
+                return null
+            }
+            data.value = response.data?.data || response.data
             return data.value
         } catch (e: any) {
             error.value = e.message

@@ -77,7 +77,7 @@
                     <button @click="handleDuplicate(campaign._id)" class="text-gray-500 hover:text-black">
                         Duplicate
                     </button>
-                    <button @click="handleDelete(campaign._id)" class="text-red-500 hover:text-red-700">
+                    <button @click="handleDelete(campaign._id, campaign.name)" class="text-red-500 hover:text-red-700">
                         Delete
                     </button>
                 </div>
@@ -86,6 +86,29 @@
         </tbody>
       </table>
     </div>
+    <!-- Delete Confirmation Modal -->
+    <UiModal v-model="showDeleteModal" title="Delete Campaign">
+      <div class="space-y-4">
+        <p v-if="isValentineCampaign" class="text-red-600 font-medium bg-red-50 p-3 rounded-lg border border-red-100">
+          ⚠️ Warning: You are about to delete a Valentine Campaign. This action cannot be undone and may affect active promotions.
+        </p>
+        <p v-else class="text-gray-600">
+          Are you sure you want to delete this campaign? This action cannot be undone.
+        </p>
+        
+        <div class="flex justify-end gap-3 pt-4">
+          <button @click="showDeleteModal = false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+          <button 
+            @click="confirmDelete" 
+            :disabled="deleting"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+          >
+            <span v-if="deleting" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            {{ deleting ? 'Deleting...' : 'Delete Forever' }}
+          </button>
+        </div>
+      </div>
+    </UiModal>
   </main>
 </template>
 
@@ -95,14 +118,26 @@ import { useDeleteCampaign } from '@/composables/modules/campaigns/useDeleteCamp
 import { useDuplicateCampaign } from '@/composables/modules/campaigns/useDuplicateCampaign'
 
 const { campaigns, loading, fetchCampaigns } = useListCampaigns()
-const { deleteCampaign } = useDeleteCampaign()
+const { deleteCampaign, loading: deleting } = useDeleteCampaign()
 const { duplicateCampaign } = useDuplicateCampaign()
 
-const handleDelete = async (id: string) => {
-  if (confirm('Are you sure you want to delete this campaign?')) {
-    await deleteCampaign(id)
-    await fetchCampaigns()
-  }
+const showDeleteModal = ref(false)
+const selectedCampaignId = ref<string | null>(null)
+const isValentineCampaign = ref(false)
+
+const handleDelete = (id: string, name: string) => {
+  selectedCampaignId.value = id
+  isValentineCampaign.value = name.toLowerCase().includes('valentine')
+  showDeleteModal.value = true
+}
+
+const confirmDelete = async () => {
+  if (!selectedCampaignId.value) return
+  
+  await deleteCampaign(selectedCampaignId.value)
+  showDeleteModal.value = false
+  selectedCampaignId.value = null
+  await fetchCampaigns()
 }
 
 const handleDuplicate = async (id: string) => {

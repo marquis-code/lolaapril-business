@@ -20,77 +20,117 @@
 
 /* Global styles - not scoped so they apply everywhere */
 @font-face {
-    font-family: 'Roobert PRO';
-    src: url('../font/RoobertPRO-Bold.eot');
-    src: local('Roobert PRO Regular'), local('RoobertPRO-Regular'),
-        url('../font/RoobertPRO-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../font/RoobertPRO-Regular.woff2') format('woff2'),
-        url('../font/RoobertPRO-Regular.woff') format('woff'),
-        url('../font/RoobertPRO-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Roobert PRO';
-    src: url('../font/RoobertPRO-Bold.eot');
-    src: local('Roobert PRO Bold'), local('RoobertPRO-Bold'),
-        url('../font/RoobertPRO-Bold.eot?#iefix') format('embedded-opentype'),
-        url('../font/RoobertPRO-Bold.woff2') format('woff2'),
-        url('../font/RoobertPRO-Bold.woff') format('woff'),
-        url('../font/RoobertPRO-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Roobert PRO';
-    src: url('../font/RoobertPRO-Light.eot');
-    src: local('Roobert PRO Light'), local('RoobertPRO-Light'),
-        url('../font/RoobertPRO-Light.eot?#iefix') format('embedded-opentype'),
-        url('../font/RoobertPRO-Light.woff2') format('woff2'),
-        url('../font/RoobertPRO-Light.woff') format('woff'),
-        url('../font/RoobertPRO-Light.ttf') format('truetype');
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Light.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'Roobert PRO';
-    src: url('../font/RoobertPRO-Medium.eot');
-    src: local('Roobert PRO Medium'), local('RoobertPRO-Medium'),
-        url('../font/RoobertPRO-Medium.eot?#iefix') format('embedded-opentype'),
-        url('../font/RoobertPRO-Medium.woff2') format('woff2'),
-        url('../font/RoobertPRO-Medium.woff') format('woff'),
-        url('../font/RoobertPRO-Medium.ttf') format('truetype');
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
 
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Variable fonts — single file covers full weight range */
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-VariableFont_wght.ttf') format('truetype supports variations'),
+         url('../font/CormorantGaramond-VariableFont_wght.ttf') format('truetype');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    src: url('../font/CormorantGaramond-Italic-VariableFont_wght.ttf') format('truetype supports variations'),
+         url('../font/CormorantGaramond-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 300 700;
+    font-style: italic;
+    font-display: swap;
+}
 
 html,
 body {
-  font-family: 'RoobertPRO', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 * {
-  font-family: 'RoobertPRO', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
 }
 
-  h1 {
-      font-family: 'Roboto Pro', sans-serif;
-      font-weight: bold;
-    }
-
-/* You can also create utility classes for different weights */
-/* .font-normal {
-  font-weight: 300;
-} */
+h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+}
 
 .bg-white {
   background-color: white;
@@ -106,7 +146,6 @@ body {
 .dark .bg-custom {
   background-color: #1a202c; /* Dark mode background */
 }
-
 
 .hide-scrollbar {
   scrollbar-width: none;        /* Firefox */
@@ -127,15 +166,14 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-
 .custom-checkbox {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 1.25rem;  /* Reduced from 2.5rem */
-  height: 1.25rem; /* Reduced from 2.5rem */
+  width: 1.25rem;
+  height: 1.25rem;
   border: 2px solid #d1d5db;
-  border-radius: 0.375rem; /* Reduced from 0.75rem */
+  border-radius: 0.375rem;
   background-color: white;
   cursor: pointer;
   position: relative;
@@ -153,10 +191,10 @@ input[type=number] {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
-  width: 5px;  /* Increased from 3px */
-  height: 9px; /* Increased from 6px */
+  width: 5px;
+  height: 9px;
   border: solid white;
-  border-width: 0 2.5px 2.5px 0; /* Increased from 2px */
+  border-width: 0 2.5px 2.5px 0;
 }
 
 .custom-checkbox:hover {
@@ -169,5 +207,5 @@ input[type=number] {
 }
 
 .custom-input {
-  @apply w-full px-4 py-3.5 text-sm outline-none focus:border focus:border-[#005967] rounded-xl bg-[#1A1A1B09]  focus:bg-white pr-10
+  @apply w-full px-4 py-3.5 text-sm outline-none focus:border focus:border-[#005967] rounded-xl bg-[#1A1A1B09] focus:bg-white pr-10
 }

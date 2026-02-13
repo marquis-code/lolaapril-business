@@ -18,15 +18,54 @@
           <UiAnimatedInput v-model="form.name" label="Campaign Name" required />
           <UiAnimatedInput v-model="form.subject" label="Subject Line"  required />
           <UiAnimatedInput v-model="form.previewText" label="Preview Text" />
-          <UiAnimatedInput v-model="form.bannerUrl" label="Banner URL" type="url" />
+          
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700">Campaign Banner</label>
+            <div class="flex items-start gap-4">
+              <div v-if="form.bannerUrl" class="relative group w-32 h-20 rounded-lg overflow-hidden border border-gray-200">
+                <img :src="form.bannerUrl" alt="Banner Preview" class="w-full h-full object-cover" />
+                <button 
+                  type="button"
+                  @click="form.bannerUrl = ''" 
+                  class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+              </div>
+              <div 
+                v-else
+                @click="bannerInput?.click()"
+                class="w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-black transition-colors"
+              >
+                <div v-if="uploadingBanner" class="flex flex-col items-center">
+                  <div class="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                  <span class="text-[10px] text-gray-400 mt-1">Uploading...</span>
+                </div>
+                <template v-else>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                  <span class="text-[10px] text-gray-400 mt-1">Upload</span>
+                </template>
+              </div>
+              <input 
+                ref="bannerInput" 
+                type="file" 
+                accept="image/*" 
+                class="hidden" 
+                @change="handleBannerUpload" 
+              />
+              <div class="flex-grow text-xs text-gray-500 py-2">
+                Recommend size: 1200x600px.<br/>
+                Max size: 5MB.
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- Content -->
        <section class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm space-y-4">
         <h2 class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Content</h2>
-        <UiAnimatedInput v-model="form.content" label="Email Body (HTML)" placeholder="<h1>Hello</h1><p>Start writing...</p>" type="textarea" :rows="10" required />
-        <p class="text-xs text-gray-500 mt-1">HTML tags are supported.</p>
+        <UiRichTextEditor v-model="form.content" label="Email Body" placeholder="Start writing your campaign..." />
       </section>
 
       <!-- Audience -->
@@ -107,15 +146,19 @@
 import { useCreateCampaign } from '@/composables/modules/campaigns/useCreateCampaign'
 import { useCampaignDetails } from '@/composables/modules/campaigns/useCampaignDetails'
 import { useUpdateCampaign } from '@/composables/modules/campaigns/useUpdateCampaign'
+import { useUploadImage } from '@/composables/modules/upload/useUploadImage'
 
 const route = useRoute()
 const router = useRouter()
+const bannerInput = ref<HTMLInputElement | null>(null)
+
 const campaignId = computed(() => (route.params.id as string) || (route.query.id as string))
 const isEditing = computed(() => !!campaignId.value && campaignId.value !== 'create')
 
 const { createCampaign, loading: creating } = useCreateCampaign()
 const { getCampaignDetails, loading: fetching } = useCampaignDetails()
 const { updateCampaign, loading: updating } = useUpdateCampaign()
+const { execute: uploadImage, loading: uploadingBanner } = useUploadImage()
 
 const loading = computed(() => creating.value || updating.value || fetching.value)
 
@@ -145,6 +188,22 @@ watch(() => specificEmailsInput.value, (val) => {
     }
 })
 
+const handleBannerUpload = async (event: Event) => {
+    const file = (event.target as HTMLInputElement).files?.[0]
+    if (!file) return
+    
+    try {
+        const result = await uploadImage(file)
+        if (result && result.url) {
+            form.bannerUrl = result.url
+        }
+    } catch (error) {
+        console.error('Failed to upload banner:', error)
+    } finally {
+        if (bannerInput.value) bannerInput.value.value = ''
+    }
+}
+
 onMounted(async () => {
   if (isEditing.value) {
     const data = await getCampaignDetails(campaignId.value)
@@ -172,7 +231,9 @@ onMounted(async () => {
   }
 })
 
-const handleSubmit = async () => {
+const handleSubmit = async (e?: Event) => {
+  if (e) e.preventDefault()
+  console.log('Submitting campaign...', form)
   const payload = { ...form }
   
   // Cleanup schedule payload

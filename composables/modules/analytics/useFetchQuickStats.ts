@@ -11,8 +11,12 @@ export const useFetchQuickStats = () => {
         loading.value = true
         error.value = null
         try {
-            const response = await analytics_api.getQuickStats()
-            data.value = response.data.data || response.data
+            const response = await analytics_api.getQuickStats() as any
+            if (response.type === 'ERROR') {
+                error.value = response.data?.message || 'Failed to fetch quick stats'
+                return null
+            }
+            data.value = response.data?.data || response.data
             return data.value
         } catch (e: any) {
             error.value = e.message

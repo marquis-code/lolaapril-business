@@ -55,6 +55,7 @@ const props = defineProps<{
   values: number[]
   datasetLabel?: string
   loading?: boolean
+  valuePrefix?: string
 }>()
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -114,7 +115,7 @@ const buildChart = () => {
             y: {
               beginAtZero: true,
               ticks: {
-                callback: (value) => `₦${Number(value).toLocaleString('en-NG')}`
+                callback: (value) => `${props.valuePrefix || ''}${Number(value).toLocaleString('en-NG')}`
               }
             }
           }

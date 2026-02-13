@@ -18,7 +18,11 @@ export const useFetchDashboardMetrics = () => {
         error.value = null
         try {
             const response = await analytics_api.getDashboardMetrics()
-            data.value = response.data.data || response.data
+            if (response.type === 'ERROR') {
+                error.value = response.data?.message || 'Failed to fetch dashboard metrics'
+                return null
+            }
+            data.value = response.data?.data || response.data
             return data.value
         } catch (e: any) {
             error.value = e.message
