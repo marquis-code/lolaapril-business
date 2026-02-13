@@ -365,10 +365,18 @@ const isToday = (d: Date) => {
 }
 
 // Appointment Logic
+const getLocalYMD = (d: Date) => {
+  const offset = d.getTimezoneOffset()
+  const local = new Date(d.getTime() - (offset * 60 * 1000))
+  return local.toISOString().split('T')[0]
+}
+
 const getAppointmentsForDay = (day: Date) => {
-  const dateStr = day.toISOString().split('T')[0]
+  const dateStr = getLocalYMD(day)
   const dayAppointments = props.appointments.filter(a => {
-    const aptDate = (a.selectedDate || a.appointmentDetails?.date || '').split('T')[0]
+    // Try to find a matching date string
+    const aptDateRaw = a.selectedDate || a.appointmentDetails?.date || ''
+    const aptDate = aptDateRaw.includes('T') ? aptDateRaw.split('T')[0] : aptDateRaw
     return aptDate === dateStr
   })
 
@@ -382,7 +390,8 @@ const getAppointmentsForDay = (day: Date) => {
      
      return {
         id: a.id || a._id,
-        clientName: a.customerName || a.customer?.fullName || 'Client',
+        clientName: (a.clientId?.profile?.firstName && a.clientId?.profile?.lastName) 
+          ? `${a.clientId.profile.firstName} ${a.clientId.profile.lastName}` : (a.customerName || a.customer?.fullName || 'Client'),
         serviceName: a.selectedServices?.[0]?.serviceName || a.serviceDetails?.serviceName || 'Service',
         startTime,
         endTime: formatTime(endH, endM),

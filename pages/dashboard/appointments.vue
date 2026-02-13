@@ -73,7 +73,7 @@
       <Transition name="modal">
         <div
           v-if="selectedDay"
-          class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50"
+          class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-[1000]"
           @click.self="selectedDay = null"
         >
           <div class="bg-white w-full sm:max-w-2xl sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto">
@@ -106,7 +106,12 @@
                     </div>
                     <p class="text-xs text-gray-500">{{ appointment.appointmentNumber }}</p>
                   </div>
-                  <button class="text-primary text-xs font-semibold">View Details</button>
+                  <div class="text-right">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Client</p>
+                    <p class="text-sm font-semibold text-gray-900">
+                      {{ appointment.clientId?.profile ? `${appointment.clientId.profile.firstName} ${appointment.clientId.profile.lastName}` : 'Client' }}
+                    </p>
+                  </div>
                 </div>
 
                 <div class="space-y-2">
@@ -143,7 +148,7 @@
       <Transition name="modal">
         <div
           v-if="selectedAppointment"
-          class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50"
+          class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-[1000]"
           @click.self="selectedAppointment = null"
         >
           <div class="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto">
@@ -164,6 +169,17 @@
                 <p class="text-sm text-gray-500">Business</p>
                 <p class="font-semibold text-gray-900">{{ selectedAppointment.businessInfo?.businessName || 'Business' }}</p>
                 <p class="text-xs text-gray-500">{{ selectedAppointment.businessInfo?.address || '—' }}</p>
+              </div>
+
+              <div v-if="selectedAppointment.clientId?.profile" class="space-y-1 pt-2 border-t border-gray-100">
+                <p class="text-sm text-gray-500">Client</p>
+                <p class="font-semibold text-gray-900">
+                  {{ selectedAppointment.clientId.profile.firstName }} {{ selectedAppointment.clientId.profile.lastName }}
+                </p>
+                <p class="text-xs text-gray-500">{{ selectedAppointment.clientId.profile.email }}</p>
+                <p v-if="selectedAppointment.clientId.profile.phone" class="text-xs text-gray-500">
+                  {{ selectedAppointment.clientId.profile.phone.number || selectedAppointment.clientId.profile.phone }}
+                </p>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
@@ -193,10 +209,16 @@
                     <div class="flex items-start justify-between">
                       <div class="flex-1">
                         <p class="text-sm font-medium text-gray-900">{{ service.serviceName }}</p>
-                        <p class="text-xs text-gray-500 mt-1">{{ service.selectedOption?.description }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ service.selectedOption?.description || service.serviceType }}</p>
+                        <!-- Additional services if any -->
+                        <div v-if="service.additionalServices?.length" class="mt-1">
+                           <p v-for="add in service.additionalServices" :key="add.name" class="text-[10px] text-gray-500">
+                             + {{ add.name }}
+                           </p>
+                        </div>
                       </div>
                       <p class="text-sm font-semibold text-gray-900">
-                        ₦{{ service.selectedOption?.price?.amount?.toLocaleString() }}
+                        ₦{{ (service.selectedOption?.price?.amount || service.price?.amount || 0).toLocaleString() }}
                       </p>
                     </div>
                   </div>
@@ -240,13 +262,20 @@
                 <span>Updated: {{ formatDate(selectedAppointment.updatedAt) }}</span>
               </div>
 
-               <div v-if="selectedAppointment.status !== 'completed' && selectedAppointment.status !== 'cancelled'" class="pt-4 border-t border-gray-100">
+               <div v-if="selectedAppointment.status !== 'completed' && selectedAppointment.status !== 'cancelled'" class="pt-4 border-t border-gray-100 flex gap-3">
+                <button
+                  @click="handleCancelAppointment(selectedAppointment.id || selectedAppointment._id)"
+                  :disabled="loadingAction"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {{ loadingAction === 'cancel' ? 'Processing...' : 'Cancel Appointment' }}
+                </button>
                 <button
                   @click="handleMarkCompleted(selectedAppointment.id || selectedAppointment._id)"
-                  :disabled="markCompletedLoading"
-                  class="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#005967] hover:bg-[#004450] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  :disabled="loadingAction"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#005967] hover:bg-[#004450] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {{ markCompletedLoading ? 'Processing...' : 'Mark as Completed' }}
+                  {{ loadingAction === 'complete' ? 'Processing...' : 'Mark as Completed' }}
                 </button>
               </div>
             </div>
@@ -262,15 +291,41 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { useGetAppointments } from '@/composables/modules/appointment/useGetAppointments'
 import { useGetAppointmentStats } from '@/composables/modules/appointment/useGetAppointmentStats'
 import { useMarkAppointmentCompleted } from '@/composables/modules/appointment/useMarkAppointmentCompleted'
+import { useCancelAppointment } from '@/composables/modules/appointment/useCancelAppointment'
 
-const { markAsCompleted, loading: markCompletedLoading } = useMarkAppointmentCompleted()
+const { markAsCompleted } = useMarkAppointmentCompleted()
+const { cancelAppointment } = useCancelAppointment()
 
+// 'complete' | 'cancel' | null
+const loadingAction = ref<string | null>(null)
 const isMaximized = ref(false)
 
 const handleMarkCompleted = async (id: string) => {
-  await markAsCompleted(id)
-  selectedAppointment.value = null
-  await refreshAppointments()
+  try {
+    loadingAction.value = 'complete'
+    const res = await markAsCompleted(id)
+    if (res) {
+      selectedAppointment.value = null
+    }
+  } finally {
+    loadingAction.value = null
+    await refreshAppointments()
+  }
+}
+
+const handleCancelAppointment = async (id: string) => {
+  if (!confirm('Are you sure you want to cancel this appointment?')) return
+  
+  try {
+    loadingAction.value = 'cancel'
+    const res = await cancelAppointment(id)
+    if (res) {
+      selectedAppointment.value = null
+    }
+  } finally {
+    loadingAction.value = null
+    await refreshAppointments()
+  }
 }
 
 definePageMeta({

@@ -4,10 +4,30 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Cancellation Policy</h1>
-          <p class="text-gray-500 text-sm mt-1">Manage cancellation rules and track no-shows</p>
+          <h1 class="text-2xl font-bold text-gray-900">Cancellations</h1>
+          <p class="text-gray-500 text-sm mt-1">Manage policies and track cancelled bookings</p>
         </div>
         <div class="flex items-center gap-3">
+          <button
+            @click="currentTab = 'policy_analytics'"
+            class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+            :class="currentTab === 'policy_analytics' ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'"
+          >
+            Policy & Analytics
+          </button>
+          <button
+            @click="currentTab = 'cancelled_bookings'"
+            class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+            :class="currentTab === 'cancelled_bookings' ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'"
+          >
+            Cancelled Bookings
+          </button>
+        </div>
+      </div>
+
+      <!-- Policy & Analytics Tab -->
+      <div v-if="currentTab === 'policy_analytics'" class="space-y-6 animate-in fade-in duration-500">
+        <div class="flex items-center justify-end">
           <button
             @click="showEditPolicyModal = true"
             class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-all"
@@ -18,7 +38,6 @@
             Edit Policy
           </button>
         </div>
-      </div>
 
       <!-- Policy Overview Cards -->
       <div v-if="policy" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -428,6 +447,7 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Cancel Appointment Modal -->
     <Teleport to="body">
@@ -844,7 +864,119 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Cancelled Bookings Tab -->
+    <div v-if="currentTab === 'cancelled_bookings'" class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
+        <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <div>
+            <h3 class="font-bold text-gray-900 text-lg">Cancelled Bookings</h3>
+            <p class="text-sm text-gray-500 mt-1">Detailed log of bookings that were revoked</p>
+          </div>
+          <button 
+            @click="loadCancellations"
+            :disabled="cancellationsLoading"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-50 shadow-sm"
+          >
+            <svg class="w-4 h-4" :class="{ 'animate-spin': cancellationsLoading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="p-0">
+          <div v-if="cancellationsLoading" class="p-12 flex flex-col items-center justify-center space-y-4">
+            <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-gray-500 font-medium animate-pulse">Fetching cancellations...</p>
+          </div>
+
+          <div v-else-if="!cancellations.length" class="p-20 text-center flex flex-col items-center justify-center space-y-4 bg-gray-50/20">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-lg font-bold text-gray-900">No Cancellations Found</h4>
+              <p class="text-gray-500 mt-1 max-w-sm">No bookings have been cancelled yet. When they are, they will appear here with full details.</p>
+            </div>
+          </div>
+
+          <div v-else class="divide-y divide-gray-100">
+            <div 
+              v-for="booking in cancellations" 
+              :key="booking._id"
+              class="p-6 hover:bg-gray-50/80 transition-all group"
+            >
+              <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <!-- Booking & Client Info -->
+                <div class="flex items-start gap-4 flex-1">
+                  <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-red-100 transition-colors">
+                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Cancelled</span>
+                      <h4 class="font-bold text-gray-900 truncate">{{ booking.bookingNumber }}</h4>
+                    </div>
+                    <div class="mt-2 space-y-1">
+                      <p class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                        {{ booking.clientName }}
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span class="text-gray-500 font-normal">{{ booking.clientEmail }}</span>
+                      </p>
+                      <p class="text-xs text-gray-500">{{ booking.clientPhone }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Cancellation Details -->
+                <div class="flex-1 lg:border-l lg:border-gray-100 lg:pl-6">
+                  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ">Reason</p>
+                  <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 group-hover:bg-white transition-colors">
+                    <p class="text-sm text-gray-700 italic">"{{ booking.cancellationReason || 'No reason provided' }}"</p>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-2 font-medium">
+                    Cancelled on {{ new Date(booking.cancellationDate).toLocaleString() }}
+                  </p>
+                </div>
+
+                <!-- Booking Detail & Price -->
+                <div class="lg:w-64 text-right flex flex-col justify-between">
+                  <div>
+                    <p class="text-sm font-bold text-gray-900">
+                      {{ new Date(booking.preferredDate).toLocaleDateString() }} @ {{ booking.preferredStartTime }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ booking.totalDuration }} mins duration</p>
+                  </div>
+                  <div class="mt-4 lg:mt-0">
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-tighter mb-0.5">Total Value</p>
+                    <p class="text-xl font-black text-gray-900 tracking-tight">₦{{ formatCurrency(booking.estimatedTotal) }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Services Accordion-style details -->
+              <div v-if="booking.services?.length" class="mt-6 pt-4 border-t border-gray-50 flex flex-wrap gap-2">
+                 <div 
+                  v-for="service in booking.services" 
+                  :key="service.serviceId?._id"
+                  class="bg-white border border-gray-100 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 shadow-sm"
+                 >
+                   <span class="w-2 h-2 rounded-full bg-primary/40"></span>
+                   <span class="font-bold text-gray-900 underline decoration-primary/20 underline-offset-2">{{ service.serviceName }}</span>
+                   <span class="text-gray-400 font-medium">₦{{ formatCurrency(service.price) }}</span>
+                 </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -859,6 +991,7 @@ import { useGetNoShowAnalytics } from '@/composables/modules/cancellation/useGet
 import { useGetCancellationTrends } from '@/composables/modules/cancellation/useGetCancellationTrends'
 import { useGetClientReliability } from '@/composables/modules/cancellation/useGetClientReliability'
 import { useCheckDepositRequirement } from '@/composables/modules/cancellation/useCheckDepositRequirement'
+import { useGetCancellations } from '@/composables/modules/booking/useGetCancellations'
 import { useCustomToast } from '@/composables/core/useCustomToast'
 
 definePageMeta({
@@ -914,6 +1047,12 @@ const reliabilityClientId = ref('')
 const reliabilityData = ref<any>(null)
 const { loading: reliabilityLoading, execute: fetchReliability } = useGetClientReliability()
 const { loading: depositCheckLoading, execute: checkDepositRequirement } = useCheckDepositRequirement()
+
+// Tab state
+const currentTab = ref('policy_analytics')
+
+// Cancellations List
+const { data: cancellations, loading: cancellationsLoading, execute: fetchCancellations } = useGetCancellations()
 
 // Edit form
 const editForm = ref({
@@ -1075,6 +1214,20 @@ const checkDeposit = async () => {
 const formatCurrency = (value: number) => {
   return Number(value || 0).toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
+
+const loadCancellations = async () => {
+  try {
+    await fetchCancellations()
+  } catch (error) {
+    showToast({ title: 'Error', message: 'Failed to load cancellations', toastType: 'error' })
+  }
+}
+
+watch(currentTab, (newTab) => {
+  if (newTab === 'cancelled_bookings' && !cancellations.value.length) {
+    loadCancellations()
+  }
+})
 
 onMounted(async () => {
   await loadPolicy()

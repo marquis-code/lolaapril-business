@@ -80,5 +80,10 @@ export const booking_api = {
     resetBookingForRetry: (id: string) => {
         const url = `/bookings/${id}/reset-for-retry`
         return GATEWAY_ENDPOINT_WITH_AUTH.post(url)
+    },
+
+    getCancellations: () => {
+        const url = "/bookings/cancellations"
+        return GATEWAY_ENDPOINT_WITH_AUTH.get(url)
     }
 }

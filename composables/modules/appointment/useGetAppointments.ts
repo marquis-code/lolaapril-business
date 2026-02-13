@@ -12,7 +12,7 @@ export const useGetAppointments = () => {
     try {
       const response = await appointment_api.findAll(params)
       console.log('Get Appointments Response:', response)
-      data.value = response?.data?.appointments
+      data.value = response?.data?.appointments || response?.data || []
       return data.value
     } catch (e: any) {
       error.value = e.message
