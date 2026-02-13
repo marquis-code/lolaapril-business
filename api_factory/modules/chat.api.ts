@@ -100,7 +100,7 @@ export const chat_api = {
     const url = `/chat/auto-responses/${responseId}`
     return GATEWAY_ENDPOINT_WITH_AUTH.put(url, payload)
   },
-  
+
   // Unread Counts - Get total unread messages count
   getUnreadCounts: () => {
     const url = '/chat/unread-counts'
@@ -123,5 +123,36 @@ export const chat_api = {
   }) => {
     const url = '/chat/rooms/support'
     return GATEWAY_ENDPOINT_WITH_AUTH.post(url, payload || {})
+  },
+
+  // Conversations (New structure replacing useApi manual calls)
+  getConversations: (params: { userId: string; businessId?: string }) => {
+    const url = '/chat/conversations'
+    return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
+  },
+
+  createConversation: (payload: { businessId: string; participants: string[] }) => {
+    const url = '/chat/conversations'
+    return GATEWAY_ENDPOINT_WITH_AUTH.post(url, payload)
+  },
+
+  getMessages: (conversationId: string, params: { page?: number; limit?: number } = {}) => {
+    const url = `/chat/conversations/${conversationId}/messages`
+    return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
+  },
+
+  sendChatMessage: (conversationId: string, payload: { senderId: string; message: string; messageType: string }) => {
+    const url = `/chat/conversations/${conversationId}/messages`
+    return GATEWAY_ENDPOINT_WITH_AUTH.post(url, payload)
+  },
+
+  markAsRead: (conversationId: string, payload: { userId: string }) => {
+    const url = `/chat/conversations/${conversationId}/read`
+    return GATEWAY_ENDPOINT_WITH_AUTH.patch(url, payload)
+  },
+
+  deleteConversation: (conversationId: string) => {
+    const url = `/chat/conversations/${conversationId}`
+    return GATEWAY_ENDPOINT_WITH_AUTH.delete(url)
   }
 }

@@ -1,6 +1,7 @@
 import { ref } from 'vue'
-import type { Voucher, VoucherQueryDto } from '~/types/voucher'
+import type { Voucher, VoucherQueryDto, CreateVoucherDto } from '~/types/voucher'
 import { voucher_api } from '~/api_factory/modules'
+import { useCustomToast } from '@/composables/core/useCustomToast'
 
 export const useFetchVouchers = () => {
     const data = ref<Voucher[]>([])
@@ -12,9 +13,11 @@ export const useFetchVouchers = () => {
         error.value = null
         try {
             const response = await voucher_api.getVouchers(params)
-            console.log('Fetch Vouchers Response:', response)   
-            data.value = response.data?.vouchers
-            return data.value
+            if ([200, 201].includes(response.status)) {
+                data.value = Array.isArray(response.data) ? response.data : (response.data.vouchers || [])
+                return data.value
+            }
+            return []
         } catch (e: any) {
             error.value = e.message
             throw e

@@ -396,6 +396,9 @@ import type {
   Tax
 } from '~/types/settings'
 import { useSettings } from '@/composables/modules/useSettings'
+import { useCustomToast } from '@/composables/core/useCustomToast'
+
+const { showToast } = useCustomToast()
 
 definePageMeta({
   layout: 'dashboard'
@@ -776,9 +779,17 @@ const saveGeneral = async () => {
       defaultCurrency: form.settings.defaultCurrency,
       timezone: form.settings.timezone
     })
-    alert('Settings saved successfully')
+    showToast({
+      title: 'Success',
+      message: 'Settings saved successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to save settings')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to save settings',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -788,9 +799,17 @@ const saveBusinessHours = async () => {
   saving.value = true
   try {
     await updateBusinessHours(form.businessHours)
-    alert('Business hours updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Business hours updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update business hours')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update business hours',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -807,9 +826,17 @@ const saveAppointments = async () => {
       appointmentStatuses: form.appointmentSettings.appointmentStatuses,
       cancellationReasons: form.appointmentSettings.cancellationReasons
     })
-    alert('Appointment settings updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Appointment settings updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update appointment settings')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update appointment settings',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -822,9 +849,17 @@ const savePayments = async () => {
       paymentMethods: form.paymentSettings.paymentMethods,
       taxes: form.paymentSettings.taxes
     })
-    alert('Payment settings updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Payment settings updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update payment settings')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update payment settings',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -836,9 +871,17 @@ const saveServiceCharges = async () => {
     await updateSettings({
       serviceCharges: form.paymentSettings.serviceCharges
     })
-    alert('Service charges updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Service charges updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update service charges')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update service charges',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -851,9 +894,17 @@ const saveResourcesAndBlockedTimes = async () => {
       resources: form.settings.resources,
       blockedTimeTypes: form.settings.blockedTimeTypes
     })
-    alert('Resource settings updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Resource settings updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update resource settings')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update resource settings',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -865,9 +916,17 @@ const saveClosedPeriods = async () => {
     await updateSettings({
       closedPeriods: form.settings.closedPeriods
     })
-    alert('Closed periods updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Closed periods updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update closed periods')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update closed periods',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -887,9 +946,17 @@ const saveBranding = async () => {
         fontFamily: form.theme.fontFamily
       }
     } as any)
-    alert('Branding updated successfully')
+    showToast({
+      title: 'Success',
+      message: 'Branding updated successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to update branding')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update branding',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -899,9 +966,17 @@ const saveNotifications = async () => {
   saving.value = true
   try {
     await updateNotificationPreferences(form.preferences)
-    alert('Preferences saved successfully')
+    showToast({
+      title: 'Success',
+      message: 'Preferences saved successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to save preferences')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to save preferences',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }
@@ -1022,9 +1097,17 @@ const addDomain = async () => {
   try {
     await requestDomain(newDomain.value)
     newDomain.value = ''
-    alert('Domain requested successfully')
+    showToast({
+      title: 'Success',
+      message: 'Domain requested successfully',
+      toastType: 'success'
+    })
   } catch (e: any) {
-    alert(e.message || 'Failed to request domain')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to request domain',
+      toastType: 'error'
+    })
   } finally {
     saving.value = false
   }

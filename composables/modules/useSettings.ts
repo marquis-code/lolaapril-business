@@ -26,9 +26,11 @@ export const useSettings = () => {
     const fetchSettings = async () => {
         loading.value = true
         try {
-            const { data } = await settings_api.getSettings()
-            console.log('Fetched settings:', data)
-            settings.value =  data
+            const response = await settings_api.getSettings()
+            console.log('Fetched settings:', response.data)
+            if ([200, 201].includes(response.status)) {
+                settings.value = response.data.data || response.data
+            }
         } catch (e: any) {
             error.value = e.message
         } finally {
@@ -38,9 +40,12 @@ export const useSettings = () => {
 
     const updateSettings = async (payload: Partial<BusinessSettings>) => {
         try {
-            const { data } = await settings_api.updateSettings(payload)
-            settings.value = { ...settings.value, ...data }
-            return data
+            const response = await settings_api.updateSettings(payload)
+            if ([200, 201].includes(response.status)) {
+                const updatedData = response.data.data || response.data
+                settings.value = { ...settings.value, ...updatedData }
+                return response
+            }
         } catch (e: any) {
             throw e
         }
@@ -48,9 +53,11 @@ export const useSettings = () => {
 
     const createSettings = async (payload: BusinessSettings) => {
         try {
-            const { data } = await settings_api.createSettings(payload)
-            settings.value = data
-            return data
+            const response = await settings_api.createSettings(payload)
+            if ([200, 201].includes(response.status)) {
+                settings.value = response.data.data || response.data
+                return response
+            }
         } catch (e: any) {
             throw e
         }
@@ -67,9 +74,11 @@ export const useSettings = () => {
 
     const fetchBusinessHours = async () => {
         try {
-            const { data } = await settings_api.getBusinessHours()
-            console.log('Fetched business hours:', data)
-            businessHours.value = data
+            const response = await settings_api.getBusinessHours()
+            console.log('Fetched business hours:', response.data)
+            if ([200, 201].includes(response.status)) {
+                businessHours.value = response.data.data || response.data
+            }
         } catch (e: any) {
             console.error(e)
         }
@@ -77,9 +86,11 @@ export const useSettings = () => {
 
     const updateBusinessHours = async (payload: BusinessHours[]) => {
         try {
-            const { data } = await settings_api.updateBusinessHours(payload)
-            businessHours.value = data.data || data
-            return data
+            const response = await settings_api.updateBusinessHours(payload)
+            if ([200, 201].includes(response.status)) {
+                businessHours.value = response.data.data || response.data
+                return response
+            }
         } catch (e: any) {
             throw e
         }
@@ -87,9 +98,11 @@ export const useSettings = () => {
 
     const fetchAppointmentSettings = async () => {
         try {
-            const { data } = await settings_api.getAppointmentSettings()
-            console.log('Fetched appointment settings:', data)
-            appointmentSettings.value = data
+            const response = await settings_api.getAppointmentSettings()
+            console.log('Fetched appointment settings:', response.data)
+            if ([200, 201].includes(response.status)) {
+                appointmentSettings.value = response.data.data || response.data
+            }
         } catch (e: any) {
             console.error(e)
         }
@@ -97,10 +110,12 @@ export const useSettings = () => {
 
     const updateAppointmentSettings = async (payload: Record<string, any>) => {
         try {
-            const { data } = await settings_api.updateAppointmentSettings(payload)
-            console.log('Updated appointment settings:', data)
-            appointmentSettings.value = data
-            return data
+            const response = await settings_api.updateAppointmentSettings(payload)
+            console.log('Updated appointment settings:', response.data)
+            if ([200, 201].includes(response.status)) {
+                appointmentSettings.value = response.data.data || response.data
+                return response
+            }
         } catch (e: any) {
             throw e
         }
@@ -108,8 +123,10 @@ export const useSettings = () => {
 
     const fetchPaymentSettings = async () => {
         try {
-            const { data } = await settings_api.getPaymentSettings()
-            paymentSettings.value = data.data || data
+            const response = await settings_api.getPaymentSettings()
+            if ([200, 201].includes(response.status)) {
+                paymentSettings.value = response.data.data || response.data
+            }
         } catch (e: any) {
             console.error(e)
         }
@@ -117,8 +134,10 @@ export const useSettings = () => {
 
     const fetchNotificationSettings = async () => {
         try {
-            const { data } = await settings_api.getNotificationSettings()
-            notificationSettings.value = data.data || data
+            const response = await settings_api.getNotificationSettings()
+            if ([200, 201].includes(response.status)) {
+                notificationSettings.value = response.data.data || response.data
+            }
         } catch (e: any) {
             console.error(e)
         }
@@ -131,8 +150,10 @@ export const useSettings = () => {
         if (!user.value?._id || !businessId.value) return
 
         try {
-            const { data } = await settings_api.getNotificationPreferences(user.value._id, businessId.value)
-            preferences.value = data.preferences || data
+            const response = await settings_api.getNotificationPreferences(user.value._id, businessId.value)
+            if ([200, 201].includes(response.status)) {
+                preferences.value = response.data.preferences || response.data
+            }
         } catch (e: any) {
             console.error(e)
         }
@@ -157,8 +178,10 @@ export const useSettings = () => {
     // Branding / Theme
     const fetchTheme = async () => {
         try {
-            const { data } = await settings_api.getTheme()
-            theme.value = data
+            const response = await settings_api.getTheme()
+            if ([200, 201].includes(response.status)) {
+                theme.value = response.data.data || response.data
+            }
         } catch (e: any) {
             console.error('Theme fetch error', e)
         }
@@ -176,8 +199,10 @@ export const useSettings = () => {
     // Domains
     const fetchDomains = async () => {
         try {
-            const { data } = await settings_api.getDomains()
-            domains.value = Array.isArray(data) ? data : (data.data || [])
+            const response = await settings_api.getDomains()
+            if ([200, 201].includes(response.status)) {
+                domains.value = Array.isArray(response.data) ? response.data : (response.data.data || [])
+            }
         } catch (e: any) {
             console.error(e)
         }

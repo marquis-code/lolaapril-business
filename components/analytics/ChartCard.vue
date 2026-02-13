@@ -112,13 +112,41 @@ const buildChart = () => {
       scales: props.type === 'doughnut'
         ? undefined
         : {
+            x: {
+              ticks: {
+                maxRotation: 0,
+                minRotation: 0,
+                callback: function(val, index) {
+                  const label = this.getLabelForValue(val as number);
+                  if (typeof label === 'string' && label.length > 20) {
+                    return label.substring(0, 17) + '...';
+                  }
+                  return label;
+                }
+              }
+            },
             y: {
               beginAtZero: true,
               ticks: {
                 callback: (value) => `${props.valuePrefix || ''}${Number(value).toLocaleString('en-NG')}`
               }
             }
+          },
+      plugins: {
+        legend: {
+          display: props.type === 'doughnut'
+        },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              if (items.length > 0) {
+                return props.labels[items[0].dataIndex]
+              }
+              return ''
+            }
           }
+        }
+      }
     }
   })
 }

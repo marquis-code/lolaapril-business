@@ -15,6 +15,8 @@ export interface Voucher {
     isActive: boolean;
     applicableServiceIds?: string[];
     createdAt: string;
+    createdBy: string;
+    updatedAt?: string;
 }
 
 export interface CreateVoucherDto {
@@ -64,6 +66,7 @@ export interface MembershipProgram {
     createdAt?: string
     updatedAt?: string
 }
+
 
 export interface ClientMembership {
     _id: string
@@ -142,4 +145,10 @@ export interface CommissionBreakdown {
         revenue: number;
         commission: number;
     }>;
+}
+export interface VoucherQueryDto {
+    businessId?: string;
+    isActive?: boolean;
+    page?: number;
+    limit?: number;
 }

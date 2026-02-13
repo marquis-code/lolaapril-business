@@ -267,6 +267,9 @@ import { useDeleteVoucher } from '@/composables/modules/voucher/useDeleteVoucher
 import { useFetchVoucherStats } from '@/composables/modules/voucher/useFetchVoucherStats'
 import { useUseVoucher } from '@/composables/modules/voucher/useUseVoucher'
 import { useValidateVoucher } from '@/composables/modules/voucher/useValidateVoucher'
+import { useCustomToast } from '@/composables/core/useCustomToast'
+
+const { showToast } = useCustomToast()
 
 definePageMeta({
   layout: 'dashboard'
@@ -479,7 +482,11 @@ const handleSubmit = async () => {
     await fetchStats()
     closeFormModal()
   } catch (e: any) {
-    alert(e.message || 'Failed to save voucher')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to save voucher',
+      toastType: 'error'
+    })
   }
 }
 
@@ -491,7 +498,11 @@ const handleUpdateStatus = async () => {
     await fetchStats()
     closeStatusModal()
   } catch (e: any) {
-    alert(e.message || 'Failed to update status')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to update status',
+      toastType: 'error'
+    })
   }
 }
 
@@ -502,7 +513,11 @@ const handleDelete = async (id: string) => {
     await fetchVouchers(buildQuery())
     await fetchStats()
   } catch (e: any) {
-    alert(e.message || 'Failed to delete voucher')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to delete voucher',
+      toastType: 'error'
+    })
   }
 }
 
@@ -513,7 +528,11 @@ const handleUseVoucher = async (voucher: Voucher) => {
     await fetchVouchers(buildQuery())
     await fetchStats()
   } catch (e: any) {
-    alert(e.message || 'Failed to use voucher')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to use voucher',
+      toastType: 'error'
+    })
   }
 }
 
@@ -528,7 +547,11 @@ const handleValidateVoucher = async () => {
     )
     validationResult.value = JSON.stringify(result, null, 2)
   } catch (e: any) {
-    alert(e.message || 'Failed to validate voucher')
+    showToast({
+      title: 'Error',
+      message: e.message || 'Failed to validate voucher',
+      toastType: 'error'
+    })
   }
 }
 

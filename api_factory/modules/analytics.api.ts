@@ -26,7 +26,7 @@ export const analytics_api = {
         return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
     },
 
-    getCommissionBreakdown: (params: {startDate: string, endDate: string }) => {
+    getCommissionBreakdown: (params: { startDate: string, endDate: string }) => {
         const url = "/analytics/commissions/breakdown"
         return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
     },
@@ -49,5 +49,15 @@ export const analytics_api = {
     getFeeComparison: () => {
         const url = `/analytics/fee-comparison`
         return GATEWAY_ENDPOINT_WITH_AUTH.get(url)
+    },
+
+    getTrafficPages: (params: { startDate: string, endDate: string }) => {
+        const url = "/analytics/traffic/pages"
+        return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
+    },
+
+    getTrafficDetails: (params: { startDate: string, endDate: string }) => {
+        const url = "/analytics/traffic/details"
+        return GATEWAY_ENDPOINT_WITH_AUTH.get(url, { params })
     }
 }

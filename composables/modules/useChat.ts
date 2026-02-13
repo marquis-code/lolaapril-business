@@ -1,9 +1,10 @@
+import { chat_api } from '@/api_factory/modules/chat.api'
+import { useUser } from '@/composables/modules/auth/user'
+import { useCustomToast } from '@/composables/core/useCustomToast'
 import type { ChatMessage, Conversation } from '~/composables/modules/useRealtime'
 
 export const useChat = () => {
-    const api = useApi()
-    const businessId = useCookie('businessId')
-    const { user } = useAuth()
+    const { businessId, userId } = useUser()
 
     const conversations = ref<Conversation[]>([])
     const activeConversation = ref<Conversation | null>(null)
@@ -15,10 +16,13 @@ export const useChat = () => {
     const fetchConversations = async () => {
         loading.value = true
         try {
-            const { data } = await api.get<{ data: Conversation[] }>('/chat/conversations', {
-                params: { userId: user.value?._id, businessId: businessId.value }
+            const response = await chat_api.getConversations({
+                userId: userId.value,
+                businessId: businessId.value
             })
-            conversations.value = Array.isArray(data) ? data : (data.data || [])
+            if ([200, 201].includes(response.status)) {
+                conversations.value = Array.isArray(response.data) ? response.data : (response.data.data || [])
+            }
         } catch (e: any) {
             console.error('Failed to fetch conversations', e)
         } finally {
@@ -27,13 +31,21 @@ export const useChat = () => {
     }
 
     const createConversation = async (participantIds: string[]) => {
+        const { showToast } = useCustomToast()
         try {
-            const { data } = await api.post('/chat/conversations', {
+            const response = await chat_api.createConversation({
                 businessId: businessId.value,
-                participants: [user.value?._id, ...participantIds]
+                participants: [userId.value, ...participantIds]
             })
-            await fetchConversations()
-            return data.data || data
+            if ([200, 201].includes(response.status)) {
+                showToast({
+                    title: 'Success',
+                    message: 'Conversation created successfully',
+                    toastType: 'success'
+                })
+                await fetchConversations()
+                return response.data.data || response.data
+            }
         } catch (e: any) {
             throw e
         }
@@ -52,10 +64,10 @@ export const useChat = () => {
     const fetchMessages = async (conversationId: string, params: { page?: number, limit?: number } = {}) => {
         loading.value = true
         try {
-            const { data } = await api.get<{ data: ChatMessage[] }>(`/chat/conversations/${conversationId}/messages`, {
-                params
-            })
-            messages.value = Array.isArray(data) ? data : (data.data || [])
+            const response = await chat_api.getMessages(conversationId, params)
+            if ([200, 201].includes(response.status)) {
+                messages.value = Array.isArray(response.data) ? response.data : (response.data.data || [])
+            }
         } catch (e: any) {
             console.error('Failed to fetch messages', e)
         } finally {
@@ -66,21 +78,23 @@ export const useChat = () => {
     const sendMessage = async (conversationId: string, message: string, messageType: 'text' | 'image' | 'file' = 'text') => {
         sending.value = true
         try {
-            const { data } = await api.post(`/chat/conversations/${conversationId}/messages`, {
-                senderId: user.value?._id,
+            const response = await chat_api.sendChatMessage(conversationId, {
+                senderId: userId.value,
                 message,
                 messageType
             })
 
-            const newMessage = data.data || data
-            messages.value.push(newMessage)
+            if ([200, 201].includes(response.status)) {
+                const newMessage = response.data.data || response.data
+                messages.value.push(newMessage)
 
-            // Update last message in conversation
-            if (activeConversation.value) {
-                activeConversation.value.lastMessage = newMessage
+                // Update last message in conversation
+                if (activeConversation.value) {
+                    activeConversation.value.lastMessage = newMessage
+                }
+
+                return newMessage
             }
-
-            return newMessage
         } catch (e: any) {
             throw e
         } finally {
@@ -90,8 +104,8 @@ export const useChat = () => {
 
     const markConversationAsRead = async (conversationId: string) => {
         try {
-            await api.patch(`/chat/conversations/${conversationId}/read`, {
-                userId: user.value?._id
+            await chat_api.markAsRead(conversationId, {
+                userId: userId.value
             })
 
             const conversation = conversations.value.find(c => c._id === conversationId)
@@ -104,12 +118,20 @@ export const useChat = () => {
     }
 
     const deleteConversation = async (conversationId: string) => {
+        const { showToast } = useCustomToast()
         try {
-            await api.delete(`/chat/conversations/${conversationId}`)
-            conversations.value = conversations.value.filter(c => c._id !== conversationId)
-            if (activeConversation.value?._id === conversationId) {
-                activeConversation.value = null
-                messages.value = []
+            const response = await chat_api.deleteConversation(conversationId)
+            if ([200, 201].includes(response.status)) {
+                showToast({
+                    title: 'Success',
+                    message: 'Conversation deleted successfully',
+                    toastType: 'success'
+                })
+                conversations.value = conversations.value.filter(c => c._id !== conversationId)
+                if (activeConversation.value?._id === conversationId) {
+                    activeConversation.value = null
+                    messages.value = []
+                }
             }
         } catch (e: any) {
             throw e

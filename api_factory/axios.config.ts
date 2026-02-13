@@ -19,10 +19,10 @@ const redirectToLogin = () => {
     // Clear any stored auth data
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    
+
     // Dispatch auth change event for other components
     window.dispatchEvent(new Event('auth-change'));
-    
+
     // Redirect to login page if not already there
     if (!window.location.pathname.includes('/auth/login')) {
       window.location.href = '/auth/login';
@@ -79,6 +79,13 @@ instanceArray.forEach((instance) => {
     if (token.value) {
       config.headers.Authorization = `Bearer ${token.value}`;
     }
+
+    // Add business ID if available for multi-tenant support
+    const { businessId } = useUser();
+    if (businessId.value) {
+      config.headers['X-Business-Id'] = businessId.value;
+    }
+
     return config;
   });
 
@@ -101,7 +108,7 @@ instanceArray.forEach((instance) => {
       }
       if (err.response.status === 401) {
         const originalRequest = err.config;
-        
+
         // Don't retry if this was already a retry or if it's a refresh token request
         if (originalRequest._retry || originalRequest.url?.includes('/auth/refresh')) {
           logOut();
@@ -131,33 +138,33 @@ instanceArray.forEach((instance) => {
         return tokenManager.refreshAccessToken($GATEWAY_ENDPOINT)
           .then(newAccessToken => {
             console.log('Token refreshed, updating useUser token ref');
-            
+
             // Update the token ref for useUser to sync state
             token.value = newAccessToken;
-            
+
             // Retry the original request with new token
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
             return instance(originalRequest);
           })
           .catch(refreshError => {
             console.error('Token refresh failed in interceptor, logging out');
-            
+
             // Clear tokens only after refresh fails
             tokenManager.clearTokens();
-            
+
             // Log out user
             logOut();
-            
+
             showToast({
               title: "Session Expired",
               message: "Please login again",
               toastType: "error",
               duration: 3000
             });
-            
+
             // Redirect to login page
             redirectToLogin();
-            
+
             return Promise.reject(refreshError);
           });
       } else if (statusCodeStartsWith(err.response.status, 4)) {
